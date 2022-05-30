@@ -79,13 +79,13 @@
 
 我在研究适合 HTML/XML 处理的语言时遇到了 Racket。我意外地了解了 XML 和 Lisp 的 @link["http://www.defmacro.org/ramblings/lisp.html"]{secret kinship}：虽然 XML 不是功能齐全的编程语言，但它使用了Lisp 语法的变体。因此，Lisp 语言特别擅长处理 XMLish 结构。这很有趣。
 
-在比较了一些 Lisp 和 Scheme 变体之后，@link["http://practicaltypography.com/why-racket-why-lisp.html"]{Racket 脱颖而出} 因为它有一个基于文本的方言，称为  @seclink["getting-started" #:doc '(lib "scribblings/scribble/scribble.scrbl")]{Scribble}。 Scribble 可用于在文本内容中嵌入代码。那也很有趣。除此之外，这意味着 Scribble 可以用作 @seclink["text" #:doc '(lib "scribblings/scribble/scribble-pp.scrbl")]{通用预处理器}。所以我想我会看看我是否可以将它添加到花粉中。
+在比较了一些 Lisp 和 Scheme 变体之后，@link["http://practicaltypography.com/why-racket-why-lisp.html"]{Racket 脱颖而出} 因为它有一个基于文本的方言，称为  @seclink["getting-started" #:doc '(lib "scribblings/scribble/scribble.scrbl")]{Scribble}。 Scribble 可用于在文本内容中嵌入代码。那也很有趣。除此之外，这意味着 Scribble 可以用作 @seclink["text" #:doc '(lib "scribblings/scribble/scribble-pp.scrbl")]{通用预处理器}。所以我想我会看看我是否可以将它添加到 Pollen 中。
 
-它成功了。事实上，我开始考虑是否可以重新实现球拍中花粉的其他部分。然后我开始考虑在 Racket 中重新实现所有这些功能。
+它成功了。事实上，我开始考虑是否可以重新实现 Racket 中 Pollen 的其他部分。然后我开始考虑在 Racket 中重新实现所有这些功能。
 
 所以我做到了。
 
-@section{什么是花粉？}
+@section{什么是 Pollen ？}
 
 Pollen 是一个建立在 Scribble 和 Racket 之上的发布系统。到目前为止，我已经为基于网络的书籍优化了 Pollen，因为这主要是我使用它的目的。但它也可以用于小型项目，以及像 @seclink["Adding_support_for_PDF_output"]{PDF} 这样的非 webby 项目。
 
