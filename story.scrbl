@@ -16,103 +16,103 @@
 
 但是有一部分没有太大改进：我们制作网页的方式。多年来，承诺简化 Web 开发的工具来了又去——从 @link["http://www.macobserver.com/reviews/pagemill2.shtml"]{PageMill} 到 @link["http:// www.adobe.com/products/dreamweaver.html"]{Dreamweaver} 到 @link["http://www.squarespace.com"]{Squarespace}。与此同时，严肃的网络达人仍然忠于最初编写 HTML 的强大工具：简陋的文本编辑器。
 
-In one way, this makes sense. Web pages are made mostly of text-based data — HTML, CSS, JavaScript, and so on — and the simplest way to manipulate this data is with a text editor. While HTML and CSS are not programming languages — you can't even compute 1 + 1 — they lend themselves to semantic and logical structure that's most easily expressed by editing them as text. Furthermore, text-based editing makes debugging and performance improvements easier.
+从某种意义上说，这是有道理的。网页主要由基于文本的数据（HTML、CSS、JavaScript 等）组成，处理这些数据的最简单方法是使用文本编辑器。虽然 HTML 和 CSS 不是编程语言——你甚至无法计算 1 + 1——但它们具有语义和逻辑结构，通过将它们编辑为文本最容易表达。此外，基于文本的编辑使调试和性能改进更容易。
 
-But text-based editing is also limited. Though the underlying description of a web page is notionally human-readable, it's optimized to be readable by other software — namely, web browsers. HTML in particular is verbose and easily mistyped. And isn't it fatally dull to manage all the boilerplate, like surrounding every paragraph with @code{<p>...</p>}? Yes, it is.
+但基于文本的编辑也受到限制。尽管网页的基本描述在理论上是人类可读的，但它已经过优化，可以被其他软件（即网络浏览器）读取。尤其是 HTML 很冗长且容易输入错误。管理所有样板文件，比如用@code{<p>...</p>} 包围每个段落，是不是很枯燥？是的。
 
-For these reasons, much of web development should've lent itself to @italic{abstraction} & @italic{automation}. Abstraction means consolidating repetitive, complex patterns into simpler, more generalized forms. Automation means avoiding the drudgery and potential for error inherent in generating output files by hand. In other words, it starts to look a lot like programming.
+由于这些原因，大部分 Web 开发都应该使用 @italic{abstraction} 和 @italic{automation}。抽象意味着将重复的、复杂的模式合并为更简单、更通用的形式。自动化意味着避免手工生成输出文件所固有的乏味和潜在的错误。换句话说，它开始看起来很像编程。
 
-@section{The better idea: a programming model}
+@section{更好的主意：编程模型}
 
-Parallel with my HTML education, I also goofed around with various programming languages — C, C++, Perl, Java, PHP, JavaScript, Python. Unlike HTML, programming languages excel at abstraction and automation. This seemed like the obvious direction for web development to go.
+在接受 HTML 教育的同时，我还尝试了各种编程语言——C、C++、Perl、Java、PHP、JavaScript、Python。与 HTML 不同，编程语言擅长抽象和自动化。这似乎是 Web 开发的明显方向。
 
-What distinguishes the text-editing model from the programming model? It's a matter of direct vs. indirect manipulation of output. The text-editing model treats HTML as something to be written directly with a text editor. Whereas the programming model treats HTML — or whatever the output is — as the result of compiling a set of source files, which are written in a programming language. The costs of working indirectly via the programming language are offset by the benefits of abstraction & automation.
+文本编辑模型与编程模型有何区别？这是对输出的直接与间接操纵的问题。文本编辑模型将 HTML 视为可以直接使用文本编辑器编写的内容。而编程模型将 HTML（或任何输出）视为编译一组用编程语言编写的源文件的结果。通过编程语言间接工作的成本被抽象和自动化的好处所抵消。
 
-On the early web, the text-editing model was appealingly precise and quick. On small projects, it worked well enough. But as projects grew, the text-editing model was going to lose steam. I wasn't the only one to notice. Shortly after those million nerds made their first web page by hand, many of them set about devising ways to apply a programming model to web development. 
+在早期的网络上，文本编辑模型非常精确和快速。在小型项目中，它运行良好。但随着项目的增长，文本编辑模式将失去动力。我不是唯一一个注意到的人。在那几百万个书呆子手工制作了他们的第一个网页后不久，他们中的许多人开始着手设计将编程模型应用于 Web 开发的方法。
 
-@section{``Now you have two problems''}
+@section{``现在你有两个问题''}
 
-What followed was a steady stream of products, frameworks, tools, and content management systems that claimed to bring a programming model to web development. Some were better than others. But none of them displaced the text editor as the preferred tool of web developers. And none of them matched the power and flexibility you get from any reasonable programming language.
+随之而来的是源源不断的产品、框架、工具和内容管理系统，它们声称将编程模型带入 Web 开发。有些人比其他人更好。但它们都没有取代文本编辑器成为 Web 开发人员的首选工具。而且它们都无法与您从任何合理的编程语言中获得的功能和灵活性相提并论。
 
-Why not? These tools always promised a great leap forward in solving the web-development problem. In practice, however, they simply redistributed the pain. 
+为什么不？这些工具总是承诺在解决 Web 开发问题方面取得巨大的飞跃。然而，在实践中，他们只是重新分配了痛苦。
 
-Today, for instance, it's possible to find multiple preprocessors for @link["http://haml.info"]{HTML}, @link["http://sass-lang.com"]{CSS}, and @link["http://coffeescript.org"]{JavaScript}. But they're all separate tools, with different syntax and functions. Good luck finding a single preprocessor that can handle all your web files simultaneously.
+例如，今天可以为 @link["http://haml.info"]{HTML}、@link["http://sass-lang.com"]{CSS} 和 @link["http://coffeescript.org"]{JavaScript} 找到多个预处理器链接。但它们都是独立的工具，具有不同的语法和功能。祝你好运，希望你能找到一个可以同时处理所有 Web 文件的预处理器。
 
-This kind of thinking — from the edges inward, rather than from the center out — has been the thematic failure of web-publishing tools. Each is like the blind man of proverb with a single @link["http://www.jainworld.com/literature/story25.htm"]{hand on the elephant} — addressing a specific concern while missing the broader context. 
+这种思维——从边缘向内，而不是从中心向外——一直是网络发布工具的主题性失败。每个人都像谚语中的盲人，只摸到了@link["http://www.jainworld.com/literature/story25.htm"]{大象的一部分}——解决了一个特定的问题，却忽略了更广泛的背景。
 
-Likewise, even web-publishing systems ostensibly based on general-purpose programming languages — like @link["https://wordpress.org"]{WordPress} or @link["https://www.djangoproject.com"]{Django} — suffer from recurring deficiencies:
+同样，即使是表面上基于通用编程语言的网络发布系统，例如 @link["https://wordpress.org"]{WordPress} 或 @link["https://www.djangoproject.com"]{ Django} — 也有反复出现的缺陷：
 
 @itemlist[
 
-@item{@bold{No native data structure for HTML.} Core to any programming model is data structures. Good data structures make processing easy; bad ones make it hard. Even though HTML has a @link["http://www.w3.org/TR/html401/struct/global.html"]{well documented} format, rarely has it been handled within a programming system with a native, intuitive data structure. Instead, it's either been treated as a string (wrong), a tree (also wrong), or some magical parsed object (really wrong). This has made working with HTML in programming environments needlessly difficult.}
+@item{@bold{没有 HTML 的原生数据结构。} 任何编程模型的核心都是数据结构。良好的数据结构使处理变得容易；坏的使事情变得困难。尽管 HTML 具有 @link["http://www.w3.org/TR/html401/struct/global.html"]{良好的文档} 格式，但很少在编程系统中用原生、直观的数据结构来处理它。相反，它要么被视为一个字符串（错误）、一棵树（也是错误的），要么被视为一些神奇的解析对象（完全是错误的）。这使得在编程环境中使用 HTML 变得不必要地困难。}
 
-@item{@bold{Mandatory separation of code, presentation, and content.} This principle has often been @link["http://alistapart.com/article/separationdilemma/"]{held out} as an ideal in web development. But it's also counterintuitive, because an HTML page naturally contains all three. If you want to separate them, your tools should let you. But if you don't, your tools shouldn't force you.}
+@item{@bold{强制分离代码、表示和内容。}这个原则经常被@link["http://alistapart.com/article/separationdilemma/"]{坚持}作为Web开发的理想。但这也违反直觉，因为一个 HTML 页面自然包含了这三者。如果你想将它们分开，你的工具应该允许你这样做。但如果你不这样做，你的工具也不应该强迫你。}
 
-@item{@bold{Compromised template languages.} It seems like every programming language has at least 10 templating systems for HTML, all of which require you to learn a new ``template language'' that offers the worst of both worlds: fewer features and different syntax than the underlying language.}
+@item{@bold{受损的模板语言。} 似乎每一种编程语言都有至少 10 种用于 HTML 的模板系统，所有这些系统都要求你学习一种新的 "模板语言"，它提供了两种世界中最糟糕的情况：比底层语言更少的特性和不同的语法。}
 
-@item{@bold{Steep learning curves.} Web programmers have often chided designers for not knowing @link["http://elliotjaystocks.com/blog/web-designers-who-cant-code/"]{how to code}. But programming-based web-development tools have often had a high initial learning curve that requires you to throw out your existing workflow. Programmers built these tools — no surprise that programmers have been more comfortable with them.}
+@item{@bold{陡峭的学习曲线。} Web 程序员经常责备设计师不知道@link["http://elliotjaystocks.com/blog/web-designers-who-cant-code/"]{如何编码}。但是基于编程的网络开发工具往往有一个很高的初始学习曲线，要求你抛弃现有的工作流程。程序员建造了这些工具--程序员对它们更加得心应手并不奇怪。}
 
 ]
 
-I've tried a lot of these tools over the years. Some I liked. Some I didn't. Invariably, however, whenever I could still make do with hand-editing an HTML project, I would. After trying to cajole the web framework du jour into doing my bidding, it was relaxing to trade off some efficiency for control.
+这些年来，我尝试了很多这样的工具。有些我喜欢。有些我不喜欢。然而，每当我还能用手工编辑HTML项目的时候，我总是会这样做。在试图说服当今的网络框架为我服务之后，用一些效率来换取控制权是一件很轻松的事情。
 
 
-@section{Rethinking the solution for digital books}
+@section{重新思考数字图书的解决方案}
 
-In 2008, I launched a website called @link["http://typographyforlawyers.com"]{@italic{Typography for Lawyers}}. Initially, I'd conceived of it as a book. Then I thought ``no one's going to publish that.'' So it became a website, that I aimed to make as book-like as possible. But hand-editing wasn't going to be enough. 
+2008 年，我推出了一个名为 @link["http://typographyforlawyers.com"]{@italic{律师排版}} 的网站。起初，我把它设想成一本书。然后我想，“没有人会出版它”。因此，它变成了一个网站，我的目标是让它尽可能的像书一样。但是手工编辑是不够的。 
 
-So I used @link["http://wordpress.org"]{WordPress}. The major chore became scraping out all the crap that typically lives in blog templates. It ended up looking simpler & cleaner than the usual WordPress website. Largely because of this, people @link["http://ma.tt/2010/04/typography-for-lawyers/"]{liked it}.
+所以我使用了@link["http://wordpress.org"]{WordPress}。主要的工作变成了清除通常存在于博客模板中的所有废话。最后，它看起来比通常的 WordPress 网站更简单和干净。很大程度上是因为这个，人们@link["http://ma.tt/2010/04/typography-for-lawyers/"]{喜欢它}。
 
-Eventually, a publisher offered to release it as @link["http://typo.la/amzn"]{a paperback}, which came out in 2010 (the second edition was released in 2015).
+最终，一家出版商提出将其作为@link["http://typo.la/amzn"]{一本平装本} 发布，于 2010 年出版（第二版于 2015 年发布）。
 
-Later came the inevitable request to make it into a Kindle book. As a fan of typography, I hate the Kindle. The layout controls are coarse, and so is the reading experience. But I didn't run and hide. Basically a Kindle book is a little website made with 1995-era HTML. So I coded up some tools in Perl to convert my book to Kindle format while preserving the formatting and images as well as possible.
+后来不可避免地被要求将其制作成Kindle书。作为排版爱好者，我讨厌 Kindle。布局控制很粗糙，阅读体验也很粗糙。但我没有躲开。基本上，Kindle 书是一个使用 1995 年 HTML 制作的小网站。所以我在 Perl 中编写了一些工具来将我的书转换为 Kindle 格式，同时尽可能地保留格式和图像。
 
-At that point, I noticed I had converted @italic{Typography for Lawyers} into web format twice, using two different sets of tools. Before someone asked me to do it a third time, I started thinking about how I might create source code for the book that allowed me to render it into different formats. 
+那时，我注意到我使用两组不同的工具将@italic{Typography for Lawyers} 两次转换为网络格式。在有人要求我第三次这样做之前，我开始思考如何为这本书创建源代码，以便将其呈现为不同的格式。
 
-That was the beginning of the Pollen project.
+这就是 Pollen 项目的开始。
 
-I wrote the initial version of Pollen in Python. I devised a simplified markup-notation language for the source files. This language was compiled into XML-ish data structures using @link["http://www.dabeaz.com/ply/"]{ply} (Python lex/yacc). These structures were parsed into trees using @link["http://lxml.de/"]{LXML}. The trees were combined with templates made in @link["http://chameleon.readthedocs.org/en/latest/"]{Chameleon}. These templates were rendered and previewed with the @link["http://bottlepy.org/"]{Bottle} web server. 
+我用 Python 编写了 Pollen 的初始版本。我为源文件设计了一种简化的标记符号语言。该语言使用 @link["http://www.dabeaz.com/ply/"]{ply} (Python lex/yacc) 编译成 XML 风格的数据结构。使用@link["http://lxml.de/"]{LXML} 将这些结构解析为树。这些树与@link["http://chameleon.readthedocs.org/en/latest/"]{Chameleon} 中制作的模板相结合。这些模板通过@link["http://bottlepy.org/"]{Bottle} Web 服务器呈现和预览。
 
-Did it work? Sort of. Source code went in; web pages came out. But it was also complicated and fragile. Moreover, though the automation was there, there wasn't yet enough abstraction at the source layer. I started thinking about how I could add a source preprocessor.
+它能正常工作了吗？差不多吧。源代码进去了；网页出来了。但它也是复杂而脆弱的。此外，虽然有自动化，但源层还没有足够的抽象。我开始考虑如何添加源预处理器。
 
-@section{Enter Racket}
+@section{进入 Racket}
 
-I had come across Racket while researching languages suitable for HTML/XML processing. I had unexpectedly learned about the @link["http://www.defmacro.org/ramblings/lisp.html"]{secret kinship} of XML and Lisp: though XML is not a full-featured programming language, it uses a variant of Lisp syntax. Thus Lisp languages are particularly adept at handling XMLish structures. That was interesting.
+我在研究适合 HTML/XML 处理的语言时遇到了 Racket。我意外地了解了 XML 和 Lisp 的 @link["http://www.defmacro.org/ramblings/lisp.html"]{secret kinship}：虽然 XML 不是功能齐全的编程语言，但它使用了Lisp 语法的变体。因此，Lisp 语言特别擅长处理 XMLish 结构。这很有趣。
 
-After comparing some of the Lisp & Scheme variants, @link["http://practicaltypography.com/why-racket-why-lisp.html"]{Racket stood out} because it had a text-based dialect called  @seclink["getting-started" #:doc '(lib "scribblings/scribble/scribble.scrbl")]{Scribble}. Scribble could be used to embed code within textual content. That was interesting too. Among other things, this meant Scribble could be used as a @seclink["text" #:doc '(lib "scribblings/scribble/scribble-pp.scrbl")]{general-purpose preprocessor}. So I thought I'd see if I could add it to Pollen.
+在比较了一些 Lisp 和 Scheme 变体之后，@link["http://practicaltypography.com/why-racket-why-lisp.html"]{Racket 脱颖而出} 因为它有一个基于文本的方言，称为  @seclink["getting-started" #:doc '(lib "scribblings/scribble/scribble.scrbl")]{Scribble}。 Scribble 可用于在文本内容中嵌入代码。那也很有趣。除此之外，这意味着 Scribble 可以用作 @seclink["text" #:doc '(lib "scribblings/scribble/scribble-pp.scrbl")]{通用预处理器}。所以我想我会看看我是否可以将它添加到花粉中。
 
-It worked. So well, in fact, that I started thinking about whether I could reimplement other parts of Pollen in Racket. Then I started thinking about reimplementing all of it in Racket.
+它成功了。事实上，我开始考虑是否可以重新实现球拍中花粉的其他部分。然后我开始考虑在 Racket 中重新实现所有这些功能。
 
-So I did. And here we are.
+所以我做到了。
 
-@section{What is Pollen?}
+@section{什么是花粉？}
 
-Pollen is a publishing system built on top of Scribble and Racket. So far, I've optimized Pollen for web-based books, because that's mainly what I use it for. But it can be used for small projects too, and non-webby things like @seclink["Adding_support_for_PDF_output"]{PDF}.
+Pollen 是一个建立在 Scribble 和 Racket 之上的发布系统。到目前为止，我已经为基于网络的书籍优化了 Pollen，因为这主要是我使用它的目的。但它也可以用于小型项目，以及像 @seclink["Adding_support_for_PDF_output"]{PDF} 这样的非 webby 项目。
 
-As a publishing system, Pollen includes:
+作为一个出版系统，Pollen 包括：
 
 @itemlist[
 
-@item{@bold{A programming language.} The Pollen language is a variant of Scribble, with specific dialects tailored to different kinds of source files. You don't need to use the programming features to do useful work, but they're available when you need them.}
+@item{@bold{一种编程语言。} Pollen 语言是 Scribble 的变体，具有针对不同类型的源文件量身定制的特定方言。您不需要使用编程功能来完成有用的工作，但它们在您需要时可用。}
 
-@item{@bold{A set of tools & libraries.} Pollen can produce output in any format, but it's especially useful for markup-style formats like XML and HTML.}
+@item{@bold{一组工具和库。} Pollen 可以生成任何格式的输出，但它对于 XML 和 HTML 等标记样式格式特别有用。}
 
-@item{@bold{A development environment.} Pollen works with the DrRacket IDE. It also includes a project web server so you can dynamically preview and revise your publication.}
+@item{@bold{一个开发环境。} Pollen 可与 DrRacket IDE 配合使用。它还包括一个项目 Web 服务器，因此您可以动态预览和修改您的出版物。}
 
 
 ]
 
-Pollen addresses the deficiencies I experienced with other tools:
+Pollen 解决了我在使用其他工具时遇到的不足：
 
 @itemlist[
 
-@item{@bold{Yes, we have a native data structure for HTML.} Racket represents HTML structures as @secref["X-expressions"], which are a variant of the standard Racket data structure, called @italic{S-expressions}. In other words, not only is there a native representation for HTML, but it's represented the same way as everything else in the language.}
+@item{@bold{是的，我们有一个用于HTML的本地数据结构。} Racket 将 HTML 结构表示为 @secref["X-expressions"]，它是标准 Racket 数据结构的变体，称为 @italic{S-expressions}。换句话说，不仅有 HTML 的本地数据结构表示，而且它的表示方式与该语言中的其他所有内容相同。}
 
-@item{@bold{Flexible blending of code, presentation, and content.} Pollen is a text-based language. So a Pollen source file might have no code at all. But as a dialect of Scribble & Racket, if you want to mix code with content, you can.}
+@item{@bold{代码、演示和内容的灵活混合。} Pollen 是一种基于文本的语言。所以 Pollen 源文件可能根本没有代码。但作为 Scribble & Racket 的方言，如果你想将代码与内容混合，你当然可以。}
 
-@item{@bold{No template language.} It's not necessary, because in every Pollen file, you can use the whole Racket language, and all the usual Racket syntax.}
+@item{@bold{没有模板语言。} 这不是必需的，因为在每个 Pollen 文件中，您都可以使用整个 Racket 语言和所有常用的 Racket 语法。}
 
-@item{@bold{Shallow learning curve.} You don't need to do a lot of setup and configuration to start doing useful work with Pollen. Programmers and non-programmers can easily collaborate. Yes, I concede that if you plan to get serious, you'll need to learn some Racket. I don't think you'll regret it.}
+@item{@bold{学习曲线浅。} 您无需进行大量设置和配置即可开始使用 Pollen 进行有用的工作。程序员和非程序员可以轻松协作。是的，我承认，如果你打算认真起来，你需要学习一些 Racket 。我想你不会后悔的。}
 
 
 ]
