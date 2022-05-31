@@ -7,96 +7,96 @@
 @(my-eval `(require pollen pollen/decode pollen/template pollen/tag xml racket/list txexpr))
 
 
-@title[#:tag "third-tutorial"]{Third tutorial: Pollen markup & tag functions}
+@title[#:tag "third-tutorial"]{第三个教程： Pollen 标记和标签功能}
 
-Now you're getting to the good stuff. In this tutorial, you'll use Pollen to publish a multi-page article written in Pollen markup. You'll learn about:
+现在，你要做的是好事情了。在本教程中，你将使用 Pollen 来发布一篇用 Pollen 标记编写的多页文章。你将了解到:
 
 @itemlist[
 
 
-@item{Adding tags & attributes with Pollen markup}
+@item{使用 Pollen 标记添加标签和属性}
 
-@item{Attaching behavior to tag functions}
+@item{将行为附加到标记函数}
 
-@item{the @filepath{pollen.rkt} file}
+@item{@filepath{pollen.rkt} 文件}
 
-@item{Using @racket[decode] with Pollen markup}
+@item{使用带有 Pollen 标记的 @racket[decode]}
 
-@;item{@exec{raco pollen render} and @exec{raco pollen publish}}
+@;item{@exec{raco pollen render} 和 @exec{raco pollen publish}}
 
 
 ]
 
-If you want the shortest possible introduction to Pollen, try the @secref["quick-tour"].
+如果您想以最短的时间了解 Pollen ，请尝试@secref["quick-tour"]。
 
-@section[#:tag-prefix "tutorial-3"]{Prerequisites}
+@section[#:tag-prefix "tutorial-3"]{先决条件}
 
-I'll assume you've completed the @seclink["second-tutorial"]{second tutorial} and that you understand the principles of Pollen authoring mode — creating source files, converting them to X-expressions, and then combining them with templates to make output files. 
+我假设您已经完成了@seclink["second-tutorial"]{second tutorial} 并且您了解 Pollen 创作模式的原理 — 创建源文件，将它们转换为 X 表达式，然后将它们与模板组合制作输出文件。
 
-Because now it's time to pick up the pace. You've learned how to do some handy things with Pollen. But we haven't yet exploited the full fusion of writing environment and programming language. I promised you that @secref["the-book-is-a-program"], right? So let's do some programming.
-
-
-@section[#:tag "pollen-vs-xml"]{Optional reading: Pollen markup vs. XML}
-
-You can skip this section if XML holds no interest. But Pollen markup evolved out of my attempt to come up with an alternative to XML that would be more usable for writing. So if you're familiar with XML, the contrast may be helpful. 
-
-@subsection{The XML problem}
-
-In the @seclink["second-tutorial"]{second tutorial}, I argued that Markdown is a limiting format for authors. Why? Because Markdown is merely shorthand notation for HTML tags. As such, it has three problems: it's not semantic, it only covers a limited subset of HTML tags, and it can't be extended by an author. 
-
-These problems are partly limitations of HTML itself. And these limitations were meant to be cured by XML — the @italic{X} stands for @italic{extensible}. In principle, XML allows you to define whatever tags you like and use them in your document.
-
-So why hasn't XML taken over the world? In practice, XML promises more than it delivers. The reasons are apparent to any writer who's attempted to use XML as an authoring format:
-
-@itemlist[
-
-@item{@bold{Verbose syntax}. Unfortunately, XML relies on the same angle-bracket notation as HTML. If you think HTML source is hard to read, XML is worse. Since much of writing involves reading, this feature is also a major bug.}
-
-@item{@bold{Validation overhead}. Integral to XML is the concept of @defterm{validation}, which guarantees that a document meets certain formal criteria, usually defined in a @italic{schema}. To get the full value from XML, you generally want to use validation. But doing so imposes a lot more work on you as an author, and removes much of the expressive potential of XML.}
-
-@item{@bold{Masochistic document processing}. I'm referring to XSLT, the preferred method of transforming XML documents. I know a little XSLT, so I'll concede that there's a method to its madness. But it's still madness.}
-
-]
-
-The nicest thing we could say about XML is that its intentions are good. It's pointed toward the right goals. But its benefits are buried under atrocious ergonomics.
+因为现在是时候加快步伐了。你已经学会了如何用 Pollen 做一些方便的事情。但是我们还没有开发出编写环境和编程语言的完全融合。我答应过你@secref["the-book-is-a-program"]，对吧？所以让我们做一些编程。
 
 
-@subsection{What Pollen markup does differently}
+@section[#:tag "pollen-vs-xml"]{可选阅读： Pollen 标记与 XML}
 
-Pollen markup can be seen as a way of reaping the benefits of XML without incurring the headaches. Like XML, Pollen markup allows you to freely tag your text. But unlike XML:
+如果对 XML 不感兴趣，您可以跳过本节。但是 Pollen 标记是在我尝试提出一种更可用于编写的 XML 替代方案的过程中演变而来的。因此，如果您熟悉 XML，那么对比可能会有所帮助。
+
+@subsection{XML 的问题}
+
+在@seclink["second-tutorial"]{second tutorial} 中，我认为 Markdown 是作者的限制格式。为什么？因为 Markdown 只是 HTML 标签的简写。因此，它存在三个问题：它不是语义的，它只涵盖有限的 HTML 标记子集，并且它不能被作者扩展。 
+
+这些问题部分是 HTML 本身的限制。这些限制本应通过 XML 来解决——@italic{X} 代表 @italic{extensible}。原则上，XML 允许您定义您喜欢的任何标签并在文档中使用它们。
+
+那么，为什么 XML 还没有占领世界呢？在实践中，XML的承诺比它提供的要多。对于任何试图使用XML作为创作格式的作家来说，其原因是显而易见的。
 
 @itemlist[
 
-@item{@bold{Simple syntax}. Pollen markup follows the usual conventions of Pollen commands.}
+@item{@bold{繁琐的语法}。 不幸的是， XML 依靠的是与 HTML 相同的角括号符号。如果你认为 HTML 源代码难以阅读，那么 XML 就更糟糕了。由于写作的大部分内容都涉及到阅读，这个特点也是一个主要的错误。}
 
-@item{@bold{No structural validation}. You can use any tags you want, in any order, and you needn't define them ahead of time. Your document will still work.}
+@item{@bold{验证的开销}。XML 的组成部分是 @defterm{validation} 的概念，它保证文档符合某些形式标准，通常在 @italic{schema} 中定义。为了从 XML 中获得完整的价值，你通常希望使用验证。但这样做会给作为作者的你带来更多的工作，并消除了 XML 的大部分表达潜力。}
 
-@item{@bold{Racket processing}. Pollen markup tags can have behavior attached to them using Racket functions, either before you use them, or later.}
+@item{@bold{自虐式文档处理}。 我指的是XSLT，它是转换XML文档的首选方法。我知道一点 XSLT，所以我承认有一种方法可以解决它的疯狂。但这仍然是疯狂的。}
+
+]
+
+关于 XML，我们可以说的最好的一点是它的意图是好的。它指向正确的目标。但它的好处隐藏在恶劣的人体工程学之下。
+
+
+@subsection{Pollen 标记的不同之处}
+
+ Pollen 标记可以被视为一种获得 XML 好处而又不会引起头痛的方法。与 XML 一样，Pollen 标记允许您自由地标记您的文本。但与 XML 不同：
+
+@itemlist[
+
+@item{@bold{简单的语法}。Pollen 标记遵循 Pollen 命令的常规约定。}
+
+@item{@bold{无结构验证}。 您可以按任何顺序使用任何您想要的标签，而且您无需提前定义它们。您的文档仍然有效。}
+
+@item{@bold{ Racket 处理}。  Pollen 标记可以使用 Racke t函数为其附加行为，可以在你使用它们之前，也可以在之后。}
 
 ]
 
 
 
-@subsection{``But I really need XML…''}
+@subsection{``但我真的需要 XML……''}
 
-You can have XML. There's nothing wrong with using Pollen markup to generate XML files that can then be fed into an existing XML processing pipeline. In other words, using Pollen markup, you can treat XML as an output format rather than an input format. 
+您可以拥有 XML。使用 Pollen 标记生成 XML 文件，然后将这些文件输入现有的 XML 处理管道并没有错。换句话说，使用 Pollen 标记，您可以将 XML 视为一种输出格式，而不是一种输入格式。 
 
-In this tutorial, I'll be rendering Pollen markup with an HTML template. But you could easily use the same workflow with an XML template and thus end up with XML files.
+在本教程中，我将使用 HTML 模板呈现 Pollen 标记。但是您可以轻松地将相同的工作流程与 XML 模板一起使用，从而得到 XML 文件。
 
 
-@section{Writing with Pollen markup}
+@section{用 Pollen 标记写作}
 
-Pollen markup is a free-form markup system that lets you add arbitrary @defterm{tags} and @defterm{attributes} to your text. By arbitrary, I mean that you needn't constrain your tags to an existing specification (e.g., the tags permitted by HTML). You can — but that's an option, not a requirement.
+Pollen 标记是一个自由格式的标记系统，可让您在文本中添加任意 @defterm{tags} 和 @defterm{attributes}。任意，我的意思是你不需要将你的标签限制在现有的规范中（例如，HTML 允许的标签）。你可以——但这是一个选项，而不是一个要求。
 
-I like to think of Pollen markup as a way of capturing not just the text, but also my @bold{ideas about the text}. Some of these are low-level ideas (``this text should be italicized''). Some are high-level ideas (``this text is the topic of the page''). Some are just notes to myself. In short, everything I know about the text becomes part of the text.
+我喜欢将 Pollen 标记视为一种不仅可以捕获文本，还可以捕获我的@bold{关于文本的想法}的方式。其中一些是低层次的想法（“这个文本应该是斜体”）。有些是高层次的想法（``此文本是页面的主题''）。有些只是给我自己的笔记。简而言之，我所知道的关于文本的一切都会成为文本的一部分。
 
-In so doing, Pollen markup becomes the source code of the book. Let's try it out.
+这样一来，Pollen 标记就成为了本书的源代码。让我们试试看。
 
-@subsection{Creating a Pollen markup file}
+@subsection{创建 Pollen 标记文件}
 
-We're going to use Pollen markup to make a source file that will ultimately become HTML. So consistent with the authoring-mode workflow we learned in the @seclink["second-tutorial"]{second tutorial}, we'll start with our desired output filename, @filepath{article.html}, and then append the new Pollen markup suffix, which is @filepath{.pm}.
+我们将使用 Pollen 标记来制作最终将成为 HTML 的源文件。与我们在 @seclink["second-tutorial"]{second tutorial} 中学习的创作模式工作流程一致，我们将从所需的输出文件名 @filepath{article.html} 开始，然后附加新的 Pollen标记后缀，即@filepath{.pm}。
 
-In DrRacket, start a new file called @filepath{article.html.pm} like so (as usual, you can use any sample text you like):
+在 DrRacket 中，像这样开始一个名为 @filepath{article.html.pm} 的新文件（像往常一样，您可以使用任何您喜欢的示例文本）：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -104,13 +104,13 @@ In DrRacket, start a new file called @filepath{article.html.pm} like so (as usua
 I want to attend RacketCon this year.
 }]
 
-Consistent with usual authoring-mode policy, when you run this file, you'll get an X-expression that starts with @code{root}:
+与通常的创作模式策略一致，当您运行此文件时，您将获得一个以 @code{root} 开头的 X 表达式：
 
 @repl-output{'(root "I want to attend RacketCon this year.")}
 
-Remember, even though the first line of the file is @racketmodfont{#lang} @racketmodname[pollen] — same as the last tutorial — the new @filepath{.pm} suffix signals that Pollen should interpret the source as Pollen markup. 
+请记住，即使文件的第一行是 @racketmodfont{#lang} @racketmodname[pollen] — 与上一个教程相同 — 新的 @filepath{.pm} 后缀表明 Pollen 应该将源解释为 Pollen 标记。
 
-For instance, look what happens if you goof up and put Markdown source in a Pollen markup file, like so:
+例如，看看如果你把 Markdown 源代码放在 Pollen 标记文件中会发生什么，就像这样:
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -118,18 +118,18 @@ For instance, look what happens if you goof up and put Markdown source in a Poll
 I am **so** excited to attend __RacketCon__ this year.
 }]
 
-The Markdown syntax will be ignored, and pass through to the output:
+Markdown 语法将被忽略，并传递到输出：
 
 @repl-output{'(root "I am **so** excited to attend __RacketCon__ this year.")}
 
-Restore the non-Markdown source, and let's continue.
+恢复为非 Markdown 源文件，让我们继续。
 
 
 @subsection{Tags & tag functions}
 
-Pollen markup uses the same Pollen command syntax that we first saw in @secref["Adding_Pollen_commands"]. Previously, we used this syntax to invoke functions like @racket[define] and @racket[->html]. This consistency in syntax is deliberate, because Pollen markup is used to invoke a special kind of function called a @defterm{tag function}, which is a function that, by default, adds a tag to the text.
+Pollen 标记使用的是我们在 @secref["Adding_Pollen_commands"] 中第一次看到的 Pollen 命令语法。在此之前，我们用这种语法来调用 @racket[define] 和 @racket[->html] 等函数。这种语法上的一致性是故意的，因为Pollen标记是用来调用一种特殊的函数，叫做 @defterm{tag函数}，这种函数默认是给文本添加一个标签。
 
-To see how this works, restore your @filepath{article.html.pm} file to its original state:
+要看这是如何工作的，把你的 @filepath{article.html.pm} 文件恢复到原来的状态。
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -138,7 +138,7 @@ I want to attend RacketCon this year.
 }]
 
 
-We can add any tag with Pollen markup, but for now, let's start with an old favorite: @code{em}, which is used in HTML to add emphasis to text. We apply a tag by starting with the lozenge character (◊) followed by the tag name @code{em}, followed by the text in curly braces, like so:
+我们可以使用 Pollen 标记添加任何标签，但现在，让我们从一个旧的最爱开始：@code{em}，它在 HTML 中用于增加文本的重点。我们以菱形字符 (◊) 开头，后跟标签名称 @code{em}，然后是花括号中的文本来应用标签，如下所示：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -146,46 +146,46 @@ We can add any tag with Pollen markup, but for now, let's start with an old favo
 I want to attend ◊em{RacketCon this year}.
 }]
 
-Run this file in DrRacket and see the X-expression that results:
+在 DrRacket 中运行此文件并查看生成的 X 表达式：
 
 @repl-output{'(root "I want to attend " (em "RacketCon this year") ".")}
 
 
-You won't be surprised to hear that you can nest tags within each other:
+听到可以在彼此之间嵌套标签，您不会感到惊讶：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
  
 I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
-With the expected results:
+与预期的结果：
 
 @repl-output{'(root "I want to attend " (em "RacketCon " (strong "this") " year") ".")}
 
-@subsection{Attributes}
+@subsection{Attributes（属性）}
 
-@defterm{Attributes} are like tags for tags. Each attribute is a key–value pair where the key is any name, and the value is a string. Anyone who's seen HTML is familiar with them:
+@defterm{属性}就像标签的标签。每个属性都是一个键值对，其中键是任意名称，值是字符串。任何看过 HTML 的人都熟悉它们：
 
 @terminal{<span class="author">Prof. Leonard</span>}
 
-Here, @code{class} is an attribute for @code{span} that has value @code{"author"}. And this is what it looks like as an X-expression:
+这里，@code{class} 是 @code{span} 的属性，其值为 @code{"author"}。这就是它作为 X 表达式的样子：
 
 @repl-output{'(span ((class "author")) "Prof. Leonard")}
 
-You can add any number of attributes to a tag (first as HTML, then as an X-expression):
+您可以向标签添加任意数量的属性（首先作为 HTML，然后作为 X 表达式）：
 
 @terminal{<span class="author" id="primary" living="true">Prof. Leonard</span>}
 
 @repl-output{'(span ((class "author")(id "primary")(living "true")) "Prof. Leonard")}
 
-In Pollen markup, attributes have the same logic, but a slightly different syntax. In keeping with the tag notation you just saw, the @code{span} tag is added in the usual way:
+在 Pollen 标记中，属性具有相同的逻辑，但语法略有不同。为了与您刚刚看到的标记符号保持一致，@code{span} 标记以通常的方式添加：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
  
 ◊span{Prof. Leonard}}]
 
-Then you have two options for adding attributes. The verbose way corresponds to how the attributes appear in the X-expression:
+然后，您有两个添加属性的选项。详细方式对应于属性在 X 表达式中的显示方式：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -193,9 +193,9 @@ Then you have two options for adding attributes. The verbose way corresponds to 
 ◊span['((class "author")(id "primary")(living "true"))]{Prof. Leonard}
 }]
 
-Each key–value pair is in parentheses, and then the list of pairs is within parentheses, with a @racket[quote] (@litchar{'}) at the front that signals that the text should be used literally.
+每个键值对都在小括号里，然后键值对的列表也在小括号里，前面有一个 @racket[单引号] (@litchar{'})，表示文本应该按字面意思使用。
 
-But this is boring to type out, so Pollen also allows you to specify attributes in tag functions with Racket-style @seclink["keyword-args" #:doc '(lib "scribblings/guide/guide.scrbl")]{keyword arguments}:
+但这很无聊，因此 Pollen 还允许您使用 Racket 样式的 @seclink["keyword-args" #:doc '(lib "scribblings/guide/guide.scrbl")]{的关键字参数} 在标签函数中指定属性：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -203,73 +203,73 @@ But this is boring to type out, so Pollen also allows you to specify attributes 
 ◊span[#:class "author" #:id "primary" #:living "true"]{Prof. Leonard}
 }]
 
-In this form, each attribute name is prefixed with @litchar{#:}, indicating a keyword argument. As before, the attribute value is in quotation marks following the keyword name.
+在这种形式中，每个属性名称都以@litchar{#:} 为前缀，表示一个关键字参数。和以前一样，属性值在关键字名称后面的引号中。
 
-@margin-note{This keyword notation will work by default with any tag. When you're making a custom tag function, use @racket[define-tag-function] (rather than the usual @racket[define]) if you want your tag function to support keyword notation the same way.}
+@margin-note{默认情况下，此关键字表示法适用于任何标签。当您制作自定义标签函数时，如果您希望标签函数以相同的方式支持关键字表示法，请使用 @racket[define-tag-function]（而不是通常的 @racket[define]）。}
 
-Both of these forms will produce the same X-expression:
+这两种形式都会产生相同的 X 表达式：
 
 @repl-output{'(span ((class "author")(id "primary")(living "true")) "Prof. Leonard")}
 
 
-Now that you know how to make tags and attributes, you might wonder whether Pollen markup can be used as a quick & dirty HTML-notation system. Sure — for a quick & dirty project, why not. Recall that @secref["X-expressions"] are just alternative notation for the standard angle-bracket notation used in HTML. So if you wanted HTML like this:
+既然您知道如何制作标签和属性，您可能想知道 Pollen 标记是否可以用作快速而肮脏的 HTML 符号系统。当然——对于一个快速而肮脏的项目，为什么不呢。回想一下，@secref["X-expressions"] 只是 HTML 中使用的标准尖括号表示法的替代表示法。所以如果你想要这样的 HTML：
 
 @terminal{<div class="red" style="font-size:150%">Important <em>News</em></div>}
 
-You could write it in Pollen markup like so:
+您可以像这样在 Pollen 标记中编写它：
 
 @code{◊div[#:class "red" #:style "font-size:150%"]{Important ◊em{News}}}
 
-And then convert it (using the @racket[->html] function) into the HTML above. Thus, the tags you already know (and love?) can be used in Pollen markup, but with fewer keystrokes and cruft.
+然后将它（使用@racket[->html] 函数）转换成上面的HTML。因此，您已经知道（并且喜欢？）的标签可以在 Pollen 标记中使用，但击键和杂乱无章。
 
-Still, if Pollen markup were just an alternative notation system for HTML tags, it would be pretty boring. As I alluded above, that's merely the simplest way to use it. 
+不过，如果 Pollen 标记只是 HTML 标签的一个替代符号系统，那就太无聊了。正如我在上面提到的，这仅仅是使用它的最简单方法。
 
-In the XML spirit, Pollen markup lets you use any tags you want. That's considerably less boring.
+在 XML 精神中，Pollen 标记允许您使用任何您想要的标记。这不那么无聊了。
 
-@subsection{Optional reading: What are custom tags good for?}
+@subsection{可选阅读：自定义标签有什么用？}
 
-XML jocks can skip this section, since you already know. But if you've been living in the Markdown / HTML lowlands, read on.
+XML jocks 可以跳过这一部分，因为您已经知道了。但是，如果您一直生活在 Markdown / HTML 的低地，请继续阅读。
 
-Tags, broadly speaking, are a means of annotating a text with extra information, which I'll call @defterm{metadata} (using that term in its generic sense, not in any fiddly computery way). Metadata is the key tool that enables an author to write a book with the benefits of @defterm{semantic markup} and @defterm{format independence}.
+从广义上讲，标签是一种用额外信息注释文本的方法，我将其称为@defterm{metadata}（使用该术语的一般意义，而不是任何复杂的计算机方式）。元数据是使作者能够利用@defterm{语义标记}和@defterm{格式独立}的好处写一本书的关键工具。
 
-@subsubsection{Semantic markup}
+@subsubsection{Semantic markup（语义标记）}
 
-@defterm{Semantic markup} means adding metadata to text according to the meaning of the text, not merely its intended visual appearance. So rather than tagging @code{RacketCon} with an @code{em} tag, as we did above to indicate how the word should look, maybe we would tag it with an @code{event} tag, to indicate what @italic{kind} of thing it is.
+@defterm{语义标记} 意味着根据文本的含义向文本添加元数据，而不仅仅是其预期的视觉外观。因此，与其用@code{em} 标签标记@code{RacketCon}，就像我们在上面所做的那样来指示单词的外观，也许我们会用@code{event} 标签来标记它，来表示它是什么 @italic{类型} 的东西。
 
-Semantic markup lets an author specify distinctions that would be ambiguous in pure visual terms, thereby capturing more meaning and intent. For instance, in books, italic styling is commonly applied to a number of unrelated types of information: emphasized words, movie titles, terms being used for the first time, headings, captions and labels, and so on. Under a non-semantic formatting scheme, perhaps one would tag them all @code{em}. But in semantic terms, one would tag them @code{movie-title}, @code{first-use}, @code{heading}, as appropriate.
+语义标记让作者可以指定在纯视觉术语中会模棱两可的区别，从而捕捉更多的意义和意图。例如，在书籍中，斜体样式通常应用于许多不相关类型的信息：强调的单词、电影标题、首次使用的术语、标题、说明和标签等。在非语义格式化方案下，也许有人会将它们全部标记为@code{em}。但在语义方面，可以酌情标记它们为@code{movie-title}、@code{first-use}、@code{heading}。
 
-This has two major benefits. First, by separating appearance and meaning, an author can manage the content of the book in useful ways. For instance, if every movie title were tagged as @code{movie-title} rather than @code{italic}, then it would be simple to generate a list of all movies mentioned in the book (for the author's benefit) or a page index of movie references (for the reader's benefit). But without that semantic tagging, a movie title couldn't be distinguished from any other italicized text.
+这有两个主要好处。首先，通过分离外观和意义，作者可以以有用的方式管理书籍的内容。例如，如果每个电影标题都被标记为@code{movie-title} 而不是@code{italic}，那么生成书中提到的所有电影的列表（为了作者的利益）或页面将很简单电影参考索引（为了读者的利益）。但如果没有这种语义标记，就无法将电影标题与任何其他斜体文本区分开来。
 
-@subsubsection{Format independence}
+@subsubsection{格式独立}
 
-The second benefit of custom tags is @defterm{format independence}, or the ability to change the rendering of the text to suit a particular device or context. 
+自定义标签的第二个好处是 @defterm{格式独立}，或者改变文本的呈现以适应特定设备或上下文的能力。 
 
- When a text is encrusted with format-specific visual tags — for instance, HTML tags — then the document markup is entangled with a single output format. If you only need one output format, fine.
+ 当文本被特定格式的可视标签（例如 HTML 标签）包裹时，文档标记就会与单一的输出格式纠缠在一起。如果您只需要一种输出格式，那很好。
 
- But increasingly, book authors have been called upon to publish their work in multiple formats: paper and PDF, but also web, e-book, or other natively digital formats, that connect to devices with differing display capabilities. 
+ 但越来越多的图书作者被要求以多种格式发布他们的作品：纸质和 PDF，还有网络、电子书或其他本地数字格式，它们连接到具有不同显示功能的设备。
 
- @margin-note{Yes, I know that many of these formats are based on variants of HTML. But the HTML you can use in a desktop web browser is quite different from, say, the HTML you can use in a Kindle @code{.mobi} file. The @code{.mobi} file has other technical requirements too, like an @code{.ncx} and @code{.opf} file. So despite some genetic kinship, these HTML-ish formats are best understood as separate targets.}
+ @margin-note{是的，我知道其中许多格式都是基于 HTML 的变体。但是您可以在桌面网络浏览器中使用的 HTML 与您可以在 Kindle @code{.mobi} 文件中使用的 HTML 完全不同。 @code{.mobi} 文件还有其他技术要求，例如 @code{.ncx} 和 @code{.opf} 文件。因此，尽管存在一些遗传亲属关系，但这些类似 HTML 的格式最好被理解为独立的目标。}
 
-Using a display-driven model to manage this complexity is a terrible idea — as anyone who's tried it can attest. Converting from one display-based file type to another — for instance, word processor to HTML, or HTML to PDF — is an exercise in frustration and drain-circling expectations. 
+使用显示驱动模型来管理这种复杂性是一个糟糕的想法——任何尝试过它的人都可以证明这一点。从一种基于显示的文件类型转换为另一种（例如，将文字处理器转换为 HTML，或将 HTML 转换为 PDF）是一种令人沮丧的做法，也是一种令人望而却步的期望。
 
-This isn't surprising. For a long time, text processing has been dominated by this display-driven model. Most word processors, like Microsoft Word and Pages, have been built around this model. It worked well enough in the era where most documents were eventually going to be printed on paper (or a paper simulator like PDF). HTML was a technical leap forward, but not a conceptual leap: it mostly represented the display options available in a web browser.
+这并不奇怪。长期以来，文本处理一直由这种显示驱动的模式主导。大多数文字处理器，如Microsoft word和Pages，都是围绕这种模式构建的。在大多数文档最终都要打印在纸上（或PDF之类的纸上模拟器）的时代，它工作得很好。HTML是技术上的飞跃，但不是概念上的飞跃：它主要代表web浏览器中可用的显示选项。
 
-@margin-note{There's a couple TeX fans at the back of the room, waving their arms. Yes, TeX got a lot of things right. In practice, however, it never became a core tool for electronic publishing (which, to be fair, didn't exist when TeX was written). But plenty of ideas in Pollen have been lifted from TeX.}
+@margin-note{房间后面有几个 TeX 粉丝在挥舞着他们的手臂。是的，TeX 做对了很多事情。然而，在实践中，它从未成为电子出版的核心工具（公平地说，在编写 TeX 时，电子出版还不存在）。但是 Pollen 中的很多想法都是从 TeX 中提取的。}
 
-For a document to be format independent, two conditions have to be satisfied.
+要使一个文件具有格式独立性，必须满足两个条件。
 
-First, the document has to be readable by other programs, so they can handle the conversion of format-independent markup into a format-specific rendering (e.g., mapping semantic tags like @code{movie-title} onto visual tags like @code{em}). Most word-processor formats, like Word's @code{.docx}, are bad for authoring because these formats are opaque and proprietary. We needn't get into the political objections. As a practical matter, they're inarguably restrictive — if you can't get your data out of your file, you're stuck.
+首先，该文档必须能够被其他程序读取，这样它们才能将与格式无关的标记转换为特定格式的渲染（例如，将 @code{movie-title} 等语义标签映射到 @code{ 等视觉标签上em}）。大多数文字处理器格式（例如 Word 的 @code{.docx}）不利于创作，因为这些格式不透明且具有专有性。我们没有必要去讨论政治上的反对意见。作为一个实际问题，它们的限制性是毋庸置疑的——如果你不能把你的数据从你的文件中取出来，你就被困住了。
 
-Second, the document itself has to be represented in a way that's independent of the particularities of any one format. For instance, HTML is a bad authoring format because it encourages authors to litter their text with HTML-isms like @code{h1} and @code{span}. These have no meaning outside of HTML, and thus will always cause conversion problems. The @seclink["the-case-against-markdown"]{same goes for Markdown}, which is simply HTML in disguise.
-
-
-
-The solution to the first condition is to use text-based markup rather than proprietary file types. The solution to the second condition is to let authors define custom tags for the document, rather than the other way around. Pollen markup incorporates both of these ideas.
+其次，文档本身必须以一种独立于任何一种格式的特殊性的方式来表示。例如，HTML 是一种糟糕的创作格式，因为它鼓励作者在他们的文本中乱扔诸如 @code{h1} 和 @code{span} 之类的 HTML 术语。这些在 HTML 之外没有任何意义，因此总是会导致转换问题。 @seclink["the-case-against-markdown"]{同样适用于 Markdown}，它只是伪装成了 HTML。
 
 
-@subsection{Using custom tags}
 
-You can insert a custom tag using the same syntax as any other tag. Suppose you want to use an @code{event} tag to mark events. You would insert it like so:
+第一个条件的解决方案是使用基于文本的标记而不是专有文件类型。第二个条件的解决方案是让作者为文档定义自定义标签，而不是相反。 Pollen 标记包含了这两个想法。
+
+
+@subsection{使用自定义标签}
+
+您可以使用与任何其他标签相同的语法插入自定义标签。假设您想使用 @code{event} 标签来标记事件。你会像这样插入它：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -284,20 +284,20 @@ Which is equivalent to this HTML-ish markup:
 
 @terminal{<root>I want to attend <event>RacketCon</event> this year.</root>}
 
-In truth, Pollen doesn't notice the differences among a custom tag, a standard HTML tag, or any other kind of tag. They're all just markup tags. If you want to restrict yourself to a certain vocabulary of tags, you can. If you want to set up Pollen to enforce those restrictions, you can do that too. But by default, Pollen doesn't impose restrictions like this. In general, you can pick any tag name you want, and it will work.
+事实上，Pollen 没有注意到自定义标签、标准 HTML 标签或任何其他类型的标签之间的差异。它们都只是标记标签。如果您想将自己限制在特定的标签词汇中，您当然可以。如果你想设置 Pollen 来强制执行这些限制，你也可以这样做。但默认情况下，Pollen 不会施加这样的限制。一般来说，你可以选择任何你想要的标签名称，它都可以工作。
 
-Don't take my word for it. See what happens when you write this and run it:
+不要相信我的话。不如看看当你写完这个并运行它时，会发生什么：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
  
 I want to attend ◊long-and-impractical-tag-name{RacketCon} this year.}]
 
-One small but important exception to this rule. If you were wondering why I sometimes call them @defterm{tag functions} instead of just @defterm{tags}, it's because under the hood, every tag is implemented as a function. The default behavior of this function is just to wrap the text in a tag with the given name. 
+这条规则有一个小但重要的例外。如果你想知道为什么我有时称它们为@defterm{tag functions} 而不仅仅是@defterm{tags}，那是因为在底层，每个标签都是作为一个函数实现的。此函数的默认行为只是将文本包装在具有给定名称的标签中。
 
-The benefit of treating tags as functions will become evident later in this tutorial. But the cost of this approach is that tags occupy the same namespace as the other functions available in Pollen (and by extension, Racket). Meaning, if you try to use a tag name that's already being used for an existing function, you'll get an error.
+将标签视为函数的好处将在本教程的后面部分变得显而易见。但是这种方法的代价是标签占用与 Pollen 中可用的其他功能（以及扩展为 Racket）相同的命名空间。这意味着，如果您尝试使用已用于现有功能的标签名称，您将收到错误消息。
 
-For instance, suppose we try to use a custom tag called  @code{length}:
+例如，假设我们尝试使用名为 @code{length} 的自定义标签：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -310,27 +310,27 @@ When we run this file, we get an error:
   expected: list?
   given: "77km"}
 
-The problem is that Racket already has a function called @racket[length]. Consistent with the usual rules of Pollen command notation, your command is interpreted as an attempt to invoke the @racket[length] function, rather than apply a tag named @tt{length}.
+问题是 Racket 已经有一个名为 @racket[length] 的函数。根据 Pollen 命令符号的通常规则，您的命令被解释为尝试调用 @racket[length] 函数，而不是应用名为 @tt{length} 的标记。
 
-In practice, namespace clashes are rare. But if necessary, they're easy to work around (for the simplest method, see @secref["Invoking_tag_functions"]).
+在实践中，命名空间冲突很少见。但如有必要，它们很容易解决（对于最简单的方法，请参阅@secref["Invoking_tag_functions"]）。
 
 
-@subsection{Choosing custom tags}
+@subsection{选择自定义标签}
 
-You just saw that using custom tags is easy. Choosing custom tags, on the other hand, is less science than art. As the author, it's up to you. Some guidelines:
+你刚才看到，使用自定义标签很容易。另一方面，选择自定义标签，与其说是科学，不如说是艺术。作为作者，这取决于你。一些准则:
 
 @itemlist[
 
 
-@item{@bold{You're never doing it wrong.} I wanted to make sure you knew the case for semantic markup. But if your life would be easier just using HTML tags directly, go ahead.}
+@item{@bold{你永远不会做错。}我想确保你知道语义标记的情况。但是，如果直接使用 HTML 标签会让您的生活更轻松，那就继续吧。}
 
-@item{@bold{Tag iteratively.} Don't worry about getting all your tags right the first time through. Just as you write and then rewrite, add the tags that seem right now, and change or augment them later, because …}
+@item{@bold{反复迭代标记。}不必担心第一次就正确处理所有标签。就像你写完后再重写一样，添加现在看起来的标签，然后改变或增加它们，因为……}
 
-@item{@bold{Tags emerge from writing.} It's hopeless to try to specify all your tags in advance. As you write, you'll learn things about the text, which will suggest new tags.}
+@item{@bold{标签是从写作中出现的。} 试图事先指定所有的标签是没有希望的。在你写作的过程中，你会了解到一些关于文本的东西，这些东西会建议你使用新的标签。}
 
-@item{@bold{The best tag system is the one you'll stick with.} Tags aren't free. It takes effort to insert them consistently. Don't bother with an overambitious tag scheme that bores you more than it helps.}
+@item{@bold{最好的标签系统是你会坚持使用的。} 标签不是免费的午餐。始终如一地插入它们需要付出努力。不要为过于雄心勃勃的标签方案而烦恼，这会让您感到厌烦而不是帮助。}
 
-@item{@bold{For boilerplate, tags are faster than text.} If you find yourself repeatedly formatting certain text in a certain way — for instance, lists and tables — extract the content and wrap it in a tag that encapsulates the boilerplate.}
+@item{@bold{对于样板，标签比文本快。} 如果您发现自己以某种方式反复格式化某些文本（例如，列表和表格），则提取内容并将其包装在封装样板的标签中。}
 
 ]
 
@@ -339,43 +339,43 @@ And most important:
 @itemlist[
 
 
-@item{@bold{Tags are functions.} As I @seclink["Tags___tag_functions"]{mentioned above}, every tag has a function behind it that uses the content of the tag as input. The default tag function just outputs the tag and its content.  But you can replace this with any kind of function. So in practice, you can offload a lot of labor to tags. }
+@item{@bold{标签是函数。}正如我@seclink["Tags___tag_functions"]{上面提到的}，每个标签背后都有一个函数，它使用标签的内容作为输入。默认标签函数只输出标签及其内容。但是您可以用任何类型的功能替换它。因此，在实践中，您可以将大量劳动力转移到标签上。 }
 ]
 
 
 
- As we'll see in the next section, this is where your book truly becomes programmable.
+ 正如我们将在下一节中看到的，这是您的书真正变得可编程的地方。
 
-@section[#:tag "tags-are-functions"]{Tags are functions}
+@section[#:tag "tags-are-functions"]{标签是函数}
 
 @(noskip-note)
 
-If you've used HTML or XML, tags are just tags: things you type into the document that look the same going out as they did going in. Tags can be used to select document elements or assign styling (via CSS). But they don't have any deeper effect on the document content.
+如果您使用过 HTML 或 XML，则标签只是标签：您在文档中输入的内容看起来与输入时相同。标签可用于选择文档元素或指定样式（通过 CSS）。但它们对文档内容没有任何更深层次的影响。
 
-That's not so in Pollen. Under the hood, Pollen is just an alternate way of writing code in the Racket programming language. And tags, instead of being inert markers, are actually functions.
+在 Pollen 中情况并非如此。在底层，Pollen 只是在 Racket 编程语言中编写代码的另一种方式。而标签，不是惰性标记（inert markers），实际上是函数。
 
-I think most of you know what a function is, but just to be safe — in programming, a @defterm{function} is a chunk of code that accepts some input, processes it, and then returns a value. Asking a function to process some data is known as @defterm{calling} the function. 
+我想你们中的大多数人都知道函数（function）是什么，但为了安全起见——在编程中，@defterm{function} 是一段代码，它接受一些输入，处理它，然后返回一个值。要求一个函数处理一些数据被称为@defterm{调用 (calling)}这个函数。 
 
-Leading us to the Three Golden Rules of Pollen Tags:
+将我们引向 Pollen 标签的三个黄金法则:
 
 @itemlist[#:style 'ordered
 
 
-@item{@bold{Every Pollen tag calls a function with the same name.}}
+@item{@bold{每个 Pollen 标签都调用一个同名的函数。}}
 
-@item{@bold{The input values for that function are the attributes and elements of the tag.}}
+@item{@bold{该函数的输入值是标签的属性和元素。}}
 
-@item{@bold{The whole tag — tag name, attributes, and elements — is replaced with the return value of the called function.}}
+@item{@bold{整个标签（标签名称、属性和元素）会被调用函数的返回值替换。}}
 
 ]
 
-Corollary to rule #3: because a tag represents a single X-expression, a tag function must also return a single X-expression. If you want to return multiple elements, you have to wrap them in a single X-expression. 
+规则 #3 的推论：因为一个标签代表一个单一的 X 表达式，一个标签函数也必须返回一个单一的 X 表达式。如果要返回多个元素，则必须将它们全部包装在单个 X 表达式中。 
 
-@margin-note{Corollary to the corollary: you can use Pollen's special splicing operator (@racket[\@]) as the tag of your return value to hoist its elements into the containing X-expression.}
+@margin-note{推论的推论：您可以使用 Pollen 的特殊拼接运算符 (@racket[\@]) 作为返回值的标记，将其元素提升到包含的 X 表达式中。}
 
-You've already seen the simplest kind of function in a Pollen document: the @seclink["Tags___tag_functions"]{default tag function}, which emulates the behavior of standard markup tags. 
+您已经在 Pollen 文档中看到过最简单的函数：@seclink["Tags___tag_functions"]{默认标签函数}，它模拟标准标记标签的行为。
 
- Let's revisit an earlier example, now with the help of the Golden Rules:
+ 让我们在黄金法则的帮助下重温前面的例子：
 
 
 @fileblock["article.html.pm" @codeblock{
@@ -383,45 +383,45 @@ You've already seen the simplest kind of function in a Pollen document: the @sec
  
 I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
-What happens when you run this source? Working from the inside out, Pollen calls the tag function @code{strong} with the input @code{"this"}. The result is @code{(strong "this")}. Then Pollen calls the tag function @code{em} with the three input values @code{"RacketCon " (strong "this") " year"}, which yields @code{(em "RacketCon " (strong "this") " year")}. Finally, Pollen calls the tag function @code{root} with everything in the document, resulting in:
+运行此源文件时会发生什么？ Pollen 从内到外使用输入 @code{"this"} 调用标记函数 @code{strong}。结果是@code{(strong "this")}。然后 Pollen 使用三个输入值 @code{"RacketCon " (strong "this") " year"} 调用标签函数 @code{em}，从而产生 @code{(em "RacketCon " (strong "this") " year")}。最后，Pollen 使用文档中的所有内容调用标记函数 @code{root}，结果是：
 
 @repl-output{'(root "I want to attend " (em "RacketCon " (strong "this") " year") ".")}
 
-@subsection{Attaching behavior to tags}
+@subsection{将行为附加到标签}
 
-Sometimes this default behavior will suffice. But other times, you'll want to change the behavior of a tag. Why? Here are some useful examples of what you, as an author, can do with custom tag functions:
+有时这种默认行为就足够了。但其他时候，您会想要更改标签的行为。为什么？以下是一些有用的示例，说明您作为作者可以使用自定义标签函数进行哪些操作：
 
 @itemlist[
 
-@item{Automatically detect cross-references and add hyperlinks.}
+@item{自动检测交叉引用并添加超链接。}
 
-@item{Pull in data from an external source.}
+@item{从外部源中提取数据。}
 
-@item{Generate tables, figures, and other fiddly layout objects.}
+@item{生成表格、图形和其他精美的布局对象。}
 
-@item{Change content based on given conditions.}
+@item{根据给定条件更改内容。}
 
-@item{Automatically detect line breaks, paragraphs, and lists.}
+@item{自动检测换行符、段落和列表。}
 
-@item{Insert boilerplate text.}
+@item{插入模板文本。}
 
-@item{Anything annoying or repetitive.}
+@item{任何烦人或重复的事情。}
 
-@item{Mathematical computations.}
+@item{数学计算。}
 
-@item{… and anything else you like to do with a programming language.}
+@item{… 以及您喜欢用编程语言做的任何其他事情。}
 ]
 
 
-How do you change the behavior of a tag? Two steps:
+你如何改变标签的行为？两步：
 
 @itemlist[#:style 'ordered 
-@item{Write a new function.}
-@item{Give it the name of the tag.}]
+@item{写一个新函数。}
+@item{给它起一个标签的名称。}]
 
-Once you do this, this new behavior will automatically be invoked when you use the tag.
+一旦你这样做了，当你使用标签时，这个新的行为将被自动调用。
 
-For example, let's redefine the @code{strong} tag in our example above to simply print @racket{BOOM}:
+例如，让我们在上面的示例中重新定义 @code{strong} 标记以简单地打印 @racket{BOOM}：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -434,11 +434,11 @@ When you run this file, you indeed get:
 
 @repl-output{'(root "I want to attend " (em "RacketCon " "BOOM" " year"))}
 
-How does this work? Let's look at our new function definition. As usual, we start with the lozenge character (@litchar{◊}) to denote a Pollen command. Then we use @racket[define] to introduce a function definition. The name of the function comes next, which needs to match our tag name, @code{strong}. The expression @racket[(strong word)] means ``the name of this function is @racket[strong], and it takes a single word as input, which we'll refer to as @racket[word].'' Finally we have the return value, which is @racket["BOOM"].
+这是如何运作的？让我们看看我们的新函数定义。像往常一样，我们从菱形字符 (@litchar{◊}) 开始表示 Pollen 命令。然后我们使用@racket[define] 来引入一个函数定义。接下来是函数的名称，它需要与我们的标签名称 @code{strong} 匹配。表达式@racket[(strong word)] 的意思是``这个函数的名字是@racket[strong]，它接受一个单词作为输入，我们将其称为@racket[word]。'' 最后我们有返回值，即@racket["BOOM"]。
 
-@margin-note{This example defines the function with a Racket-style command. In this simple case, you could also use a Pollen-style command, e.g., @code{◊define[(strong word)]{BOOM}}. But in general, defining functions with Racket-style commands is more flexible.}
+@margin-note{此示例使用 Racket 样式的命令定义函数。在这个简单的例子中，你也可以使用 Pollen 风格的命令，例如，@code{◊define[(strong word)]{BOOM}}。但总的来说，使用 Racket 式命令定义函数更加灵活。}
 
-Let's run this file again, but go back to the Golden Rules to understand what happens. Working from the inside out:
+让我们再次运行这个文件，但回到黄金法则来了解会发生什么。从内到外工作：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -448,44 +448,44 @@ Let's run this file again, but go back to the Golden Rules to understand what ha
 I want to attend ◊em{RacketCon ◊strong{this} year}}]
 
 @itemlist[#:style 'ordered
-@item{Pollen calls the function @code{strong} with the input @code{"this"} — same as before. But this time, the result of the @racket[strong] function is not the X-expression @code{(strong "this")}, but simply @racket{BOOM}.}
+@item{Pollen 使用输入 @code{"this"} 调用函数 @code{strong} — 和以前一样。但这一次，@racket[strong] 函数的结果不是 X 表达式 @code{(strong "this")}，而只是 @racket{BOOM}。}
 
-@item{Then Pollen calls the function @code{em} with the three input values @code{"RacketCon " "BOOM" " year"}. Because @code{em} is still a default tag function, it yields the X-expression @code{(em "RacketCon " "BOOM" " year")}.}
+@item{然后 Pollen 使用三个输入值 @code{"RacketCon " "BOOM" " year"} 调用函数 @code{em}。因为@code{em} 仍然是一个默认的标签函数，它产生X 表达式@code{(em "RacketCon " "BOOM" "year")}。}
 
-@item{Finally, Pollen calls the @code{root} function with everything in the document.}
+@item{最后，Pollen 使用文档中的所有内容调用 @code{root} 函数。}
 ]
 
-The result:
+结果：
 
 @repl-output{'(root "I want to attend " (em "RacketCon " "BOOM" " year"))}
 
-This example is contrived, of course. But the basic idea — defining a function with the name of a tag — is the foundation of programmability in Pollen. @bold{If you get this, and the Golden Rules, you get everything.}
+这个例子当然是人为的。但基本思想——使用标签名称定义函数——是 Pollen 可编程性的基础。 @bold{如果你明白这一点和黄金法则，你就会得到一切。}
 
 
-@section[#:tag-prefix "tutorial-3"]{Intermission}
+@section[#:tag-prefix "tutorial-3"]{名词: 幕间休息}
 
-That was a lot of heavy material. But it also covered the most essential idea in Pollen: that @bold{every tag is a function}. Congratulations on making it this far. 
+上面是很多沉重的材料。但它也涵盖了 Pollen 中最重要的思想：@bold{每个标签都是一个函数}。恭喜你走到了这一步。
 
-@margin-note{Experienced programmers might want to take a detour through @secref["programming-pollen"] to understand more about what's possible with tag functions.}
+@margin-note{有经验的程序员可能想绕道到 @secref["programming-pollen"] 来了解更多关于标签函数的可能性。}
 
-The good news is that the rest of this tutorial will feel more relaxed, as we put these new principles to work. 
+好消息是，当我们将这些新原则付诸实践时，本教程的其余部分会感觉更轻松。
 
-Sorry that this tutorial is longer than the others, but truly — this is the stuff that makes Pollen different. If you're not feeling enthusiastic by now, you should @link["http://www.buzzfeed.com/search?q=puppies"]{bail out}. 
+抱歉，本教程比其他教程要长，但确实——这就是让 Pollen 与众不同的东西。如果你现在还没有热情，你应该@link["http://www.buzzfeed.com/search?q=puppies"]{去缓解一下心情}。 
 
-Otherwise, get ready to rock.
+否则，就准备好摇滚吧。
 
 
-@section{Organizing functions}
+@section{组织函数}
 
-In the tag-function examples so far, we've defined each function within the source file where we used it. This is fine for quick little functions that are specific to a particular file.
+在到目前为止的标记函数示例中，我们已经在使用它的源文件中定义了每个函数。这对于特定于特定文件的快速小函数很好。
 
-But more often, you'll want to use functions available in existing code libraries, and store your own functions so they can be available to other source files.
+但更多时候，您会希望使用现有代码库中可用的函数，并存储您自己的函数，以便其他源文件可以使用它们。
 
-@margin-note{For now, we're just invoking functions from within a Pollen markup file. But as you'll see in the @seclink["fourth-tutorial"]{fourth tutorial}, any function can be called from any kind of Pollen source file.}
+@margin-note{现在，我们只是从 Pollen 标记文件中调用函数。但正如您将在@seclink["fourth-tutorial"]{fourth tutorial} 中看到的，可以从任何类型的 Pollen 源文件调用任何函数。}
 
-@subsection{Using Racket's function libraries}
+@subsection{使用 Racket 的函数库}
 
-Any function in Racket's extensive libraries can be used by loading the library with the @racket[require] command. This will make its functions and values available in the current source file with the usual Pollen command syntax. For instance, suppose we want to use the value @racket[pi] and function @racket[sinh] from @racketmodname[racket/math]:
+通过使用 @racket[require] 命令加载库，可以使用 Racket 扩展库中的任何函数。这将使其函数和值在当前源文件中可用，并使用通常的 Pollen 命令语法。例如，假设我们想使用来自@racketmodname[racket/math] 的值@racket[pi] 和函数@racket[sinh]：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -494,14 +494,14 @@ Any function in Racket's extensive libraries can be used by loading the library 
 The hyperbolic sine of π is close to ◊(number->string (sinh pi)).
 }]
 
-The result:
+结果：
 
 @repl-output{
 '(root "Pi is close to " "3.141592653589793" "." "\n" "The hyperbolic sine of pi is close to " "11.548739357257748" ".")}
 
-One caveat — you're still in a Pollen markup file, so the return value of whatever function you call has to produce a string or an X-expression, so it can be merged into the document. That's why we have @racket[number->string] wrapping the numerical values. (This is similar to the restriction introduced in the @seclink["Setting_up_a_preprocessor_source_file"]{first tutorial} where functions used in preprocessor files had to produce text.)
+一个警告——你仍然在一个 Pollen 标记文件中，所以你调用的任何函数的返回值都必须产生一个字符串或一个 X 表达式，所以它可以合并到文档中。这就是我们使用 @racket[number->string] 包装数值的原因。 （这类似于 @seclink["Setting_up_a_preprocessor_source_file"]{first tutorial} 中引入的限制，其中预处理器文件中使用的函数必须生成文本。）
 
-If your functions produce incompatible results, you'll get an error. For instance, look what happens when we remove @racket[number->string] from the example above.
+如果你的函数产生不兼容的结果，你会得到一个错误。例如，看看当我们从上面的示例中删除 @racket[number->string] 时会发生什么。
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -510,31 +510,31 @@ If your functions produce incompatible results, you'll get an error. For instanc
 The hyperbolic sine of π is close to ◊(sinh pi).
 }]
 
-This will produce an error in DrRacket:
+这将在 DrRacket 中产生错误：
 
 @errorblock{
 pollen markup error: in '(root "Pi is close to " 3.141592653589793 "." "\n" "The hyperbolic sine of pi is close to " 11.548739357257748 "."), 3.141592653589793 is not a valid element (must be txexpr, string, symbol, XML char, or cdata)}
 
-This code would not, however, produce an error if it were being run as a Pollen preprocessor file, because the preprocessor automatically converts numbers to strings. If you'd like to verify this, change the suffix to @code{.pp} and run the file again.
+但是，如果此代码作为 Pollen 预处理器文件运行，则不会产生错误，因为预处理器会自动将数字转换为字符串。如果您想验证这一点，请将后缀更改为 @code{.pp} 并再次运行该文件。
 
 
-@subsection[#:tag-prefix "tutorial-3"]{Introducing @filepath{pollen.rkt}}
+@subsection[#:tag-prefix "tutorial-3"]{介绍 @filepath{pollen.rkt}}
 
 @(noskip-note)
 
-As you get more comfortable attaching behavior to tags using tag functions, you'll likely want to create some functions that can be shared between multiple source files. The @filepath{pollen.rkt} file is a special file that is automatically imported by Pollen source files in the same directory (including subdirectories). So every function and value provided by @filepath{pollen.rkt} can be used in these Pollen files.
+随着您越来越习惯于使用标签函数将行为附加到标签，您可能希望创建一些可以在多个源文件之间共享的函数。 @filepath{pollen.rkt} 文件是同目录（包括子目录）的 Pollen 源文件自动导入的特殊文件。所以@filepath{pollen.rkt} 提供的每个函数和值都可以在这些 Pollen 文件中使用。
 
-First, using @filepath{pollen.rkt} isn't mandatory. Within a Pollen source file, you can always import functions and values with @racket[require] (as seen in the previous section). @filepath{pollen.rkt} just makes it easier to propagate a set of common definitions to every Pollen source file in your project.
+首先，使用@filepath{pollen.rkt} 不是强制性的。在 Pollen 源文件中，您始终可以使用 @racket[require] 导入函数和值（如上一节所示）。 @filepath{pollen.rkt} 只是更容易将一组通用定义传播到项目中的每个 Pollen 源文件。
 
-Second, notice from the @filepath{.rkt} suffix that @filepath{pollen.rkt} is a source file containing Racket code, not Pollen code. This is the default because while Pollen's notation is more convenient for text-based source files, Racket's notation is more convenient when you're just dealing with code.
+其次，请注意@filepath{.rkt} 后缀，@filepath{pollen.rkt} 是包含 Racket 代码而不是 Pollen 代码的源文件。这是默认设置，因为虽然 Pollen 的表示法对于基于文本的源文件更方便，但 Racket 的表示法在您处理代码时更方便。
 
-@margin-note{You can still use Pollen notation within a Racket source file. See @racketmodname[pollen/mode].} 
+@margin-note{您仍然可以在 Racket 源文件中使用 Pollen 表示法。见@racketmodname[pollen/mode]。} 
 
-Third, @filepath{pollen.rkt} always applies to Pollen source files in the same directory. But that's the minimum scope for the file, not the maximum. Pollen source files nested in subdirectories will look for a @filepath{pollen.rkt} in their own directory first. But if they can't find it, they'll look in the parent directory, then the next parent directory, and so on. Thus, by default, a @filepath{pollen.rkt} in the root folder of a project will apply to all the source files in the project. But when you add a new @filepath{pollen.rkt} to a subdirectory, it will apply to all files in that subdirectory and below.
+第三，@filepath{pollen.rkt} 始终适用于同一目录中的 Pollen 源文件。但这是文件的最小范围，而不是最大范围。嵌套在子目录中的 Pollen 源文件将首先在自己的目录中查找@filepath{pollen.rkt}。但是如果他们找不到它，他们会在父目录中查找，然后是下一个父目录，依此类推。因此，默认情况下，项目根文件夹中的@filepath{pollen.rkt} 将应用于项目中的所有源文件。但是，当您将新的 @filepath{pollen.rkt} 添加到子目录时，它将应用于该子目录及以下的所有文件。
 
-@margin-note{Though a subdirectory-specific @filepath{pollen.rkt} will supersede the one in the enclosing directory, you can still use @racket[(require "../pollen.rkt")] to pull in definitions from above, and @racket[provide] to propagate them into the current subdirectory. For instance, @racket[(provide (all-from-out "../pollen.rkt"))] will re-export everything from the parent directory.}
+@margin-note{尽管特定于子目录的 @filepath{pollen.rkt} 将取代封闭目录中的那个，但您仍然可以使用 @racket[(require "../pollen.rkt")] 从上面提取定义，并使用 @racket[provide] 将它们传播到当前子目录中。例如，@racket[(provide (all-from-out "../pollen.rkt"))] 将重新导出父目录中的所有内容。}
 
-Let's see how this works in practice. In the same directory as @filepath{article.html.pm}, create a new @filepath{pollen.rkt} file as follows:
+让我们看看这在实践中是如何工作的。在与@filepath{article.html.pm} 相同的目录中，创建一个新的@filepath{pollen.rkt} 文件，如下所示：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket
@@ -542,9 +542,9 @@ Let's see how this works in practice. In the same directory as @filepath{article
 (define author "Trevor Goodchild")
 }]
 
-Here we use the @racket[define] function (which we've seen before) to set @racket[author] equal to @racket["Trevor Goodchild"]. Note the final step: consistent with standard Racket rules, we have to explicitly @racket[provide] the new value so that other files can see it (unlike Python, things you @racket[define] in Racket are by default private, not public).
+这里我们使用@racket[define] 函数（我们之前见过）设置@racket[author] 等于@racket["Trevor Goodchild"]。注意最后一步：与标准 Racket 规则一致，我们必须显式地 @racket[provide] 新值，以便其他文件可以看到它（与 Python 不同，你在 Racket 中 @racket[define] 的东西默认是私有的，而不是公共的）。
 
-Then update good old @filepath{article.html.pm} to use our new @racket[author] value:
+然后更新旧的 @filepath{article.html.pm} 以使用我们的新 @racket[author] 值：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -552,11 +552,11 @@ Then update good old @filepath{article.html.pm} to use our new @racket[author] v
 The author is ◊|author|.
 }]
 
-Run this in DrRacket and you'll get:
+在 DrRacket 中运行它，你会得到：
 
 @repl-output{'(root "The author is " "Trevor Goodchild" ".")}
 
-Staying in the same directory, create a second Pollen source file:
+留在同一目录中，创建第二个 Pollen 源文件：
 
 @fileblock["barticle.html.pm" @codeblock{
 #lang pollen
@@ -564,13 +564,13 @@ Staying in the same directory, create a second Pollen source file:
 The author is really ◊|author|?
 }]
 
-Run this, and you'll get:
+运行这个，你会得到：
 
 @repl-output{'(root "The author is really " "Trevor Goodchild" "?")}
 
-That's all there is to it. You see how the value provided by @filepath{pollen.rkt} is automatically available within both Pollen source files.
+这就是它的全部内容。你可以看到 @filepath{pollen.rkt} 提供的值是如何在两个 Pollen 源文件中自动出现的。
 
-You can import functions, including tag functions, the same way. For instance, add a function for @racket[em]:
+您可以以相同的方式导入函数，包括标记函数。例如，为@racket[em] 添加一个函数：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket
@@ -582,11 +582,11 @@ You can import functions, including tag functions, the same way. For instance, a
 }]
 
 
-We have a new bit of notation here. Notice that we defined our tag function as @racket[(em . elements)] rather than @racket[(em word)]. The use of a dot before the last input argument makes it into a @defterm{rest argument}. This puts all the remaining input arguments — however many there are — into one list. In general, this is the best practice for tag functions, because you don't usually know in advance how many elements will be passed to the function as input (for more about this, see @secref["the-text-body"]).
+我们这里有一个新的符号。请注意，我们将标记函数定义为@racket[(em . elements)] 而不是@racket[(em word)]。在最后一个输入参数之前使用点使其成为 @defterm{rest 参数}。这会将所有剩余的输入参数（无论有多少）放入一个列表中。一般来说，这是标记函数的最佳实践，因为您通常不会事先知道有多少元素将作为输入传递给函数（有关此的更多信息，请参阅@secref["the-text-body"] ）。
 
-The @racket[txexpr] function is a utility from the @racket[txexpr] package (which is installed with Pollen). It builds a new X-expression from a tag, attribute list, and list of elements. 
+@racket[txexpr] 函数是来自@racket[txexpr] 包（与 Pollen 一起安装）中的一个实用程序。它从标签、属性列表和元素列表构建新的 X 表达式。
 
-Then we use our new tag function in a source file:
+然后我们在源文件中使用我们的新标签函数：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -594,11 +594,11 @@ Then we use our new tag function in a source file:
 The ◊em{author} is ◊em{◊|author|}.
 }]
 
-With the expected results:
+与预期的结果：
 
 @repl-output{'(root "The " (extra-big "author") " is " (extra-big "Trevor Goodchild") ".")}
 
-By the way, if you just want to @racket[provide] everything in @filepath{pollen.rkt}, you can use the @racket[all-defined-out] shorthand:
+顺便说一句，如果你只想@racket[provide] @filepath{pollen.rkt} 中的所有内容，你可以使用@racket[all-defined-out] 简写：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket
@@ -611,11 +611,11 @@ By the way, if you just want to @racket[provide] everything in @filepath{pollen.
 
 
 
-@section{Decoding markup with a @tt{root} tag function}
+@section{使用 @tt{root} 标记函数解码标记}
 
-As you've seen, the X-expression you get when you run a Pollen markup file always starts with a tag called @code{root}. You can attach a custom tag function to @code{root} the same way as any other tag — by creating a new function and calling it @code{root}. 
+如您所见，运行 Pollen 标记文件时获得的 X 表达式总是以名为 @code{root} 的标记开头。您可以像任何其他标签一样将自定义标签函数附加到 @code{root} — 通过创建一个新函数并将其命名为 @code{root}。 
 
-For instance, you could do something simple, like change the name of the output X-expression:
+例如，您可以做一些简单的事情，比如更改输出 X 表达式的名称：
 
 @fileblock["article.html.pm" @codeblock|{
 #lang pollen
@@ -626,33 +626,33 @@ For instance, you could do something simple, like change the name of the output 
 The ◊code{root} tag is now called ◊code{content}.
 }|]
 
-Resulting in:
+导致：
 
 @repl-output{'(content "The " (code "root") " tag is now called " (code "content") ".")}
 
-Unlike other tags in your document, @code{root} contains the entire content of the document. So the function you attach to @code{root} can operate on everything.
+与文档中的其他标签不同，@code{root} 包含文档的全部内容。因此，您附加到 @code{root} 的函数可以对所有内容进行操作。
 
-For that reason, one of the most useful things you can do with a tag function attached to @code{root} is @defterm{decoding} the content of the page. By decoding, I mean any post-processing of content that happens after the tags within the page have been evaluated. 
+出于这个原因，使用附加到@code{root} 的标记函数可以做的最有用的事情之一就是@defterm{decoding} 页面的内容。通过解码，我的意思是在计算完页面内的全部标签之后发生的任何内容后处理。
 
-Decoding is a good way to automatically accomplish:
+解码是自动完成以下操作的好方法：
 
 @itemlist[
 
-@item{Detection of linebreaks, paragraphs, and list items based on whitespace.}
+@item{基于空格检测换行符、段落和列表项。}
 
-@item{Hyphenation.}
+@item{断字。}
 
-@item{Typographic optimizations, like smart quotes, dashes, and ligatures.}
+@item{排版优化，例如智能引号、破折号和连字。}
 
-@item{Gathering data for indexing or cross-referencing.}
+@item{为索引或交叉引用收集数据。}
 
-@item{Any document enhancements a) that can be handled programmatically and b) that you'd prefer not to hard-code within your source files.}
+@item{任何文件增强功能，a）可以用程序处理，b）你不希望在你的源文件中硬编码。}
 
 ]
 
-As an example, let's take one of my favorites — linebreak and paragraph detection. In XML & HTML authoring, you have to insert every @code{<br />} and @code{<p>} tag by hand. This is profoundly dull, clutters the source file, and makes editing a chore. 
+举个例子，让我们以我最喜欢的一种——换行和段落检测为例。在 XML 和 HTML 创作中，您必须手动插入每个 @code{<br />} 和 @code{<p>} 标记。这非常乏味，使源文件混乱，并使编辑成为一件苦差事。
 
-Instead, let's make a decoder that allows us to denote a linebreak with a single newline in the source, and a paragraph break with a double newline. Here's some sample content with single and double newlines:
+相反，让我们制作一个解码器，它允许我们在源代码中用一个换行符表示换行符，用双换行符表示一个段落换行符。这是一些带有单换行符和双换行符的示例内容：
 
 @fileblock["article.html.pm" @codeblock|{
 #lang pollen
@@ -663,26 +663,26 @@ And a new line.
 The second paragraph --- isn't it great.
 }|]
 
-Because we don't yet have a decoder, these newlines just get passed through:
+因为我们还没有解码器，这些换行符只是被通过了：
 
 @repl-output{'(root "The first line of the 'first' paragraph." "\n" "And a new line." "\n" "\n" "The second paragraph --- isn't it great.")}
 
-When this X-expression is converted to HTML, the newlines will persist:
+当此 X 表达式转换为 HTML 时，换行符将持续存在：
 
 @terminal{<root>The first line of the 'first' paragraph.\nAnd a new line.\n\nThe second paragraph --- isn't it great.</root>}
 
-But in HTML, raw newlines are displayed as a single space. So if you view this file in the project server, you'll see:
+但在 HTML 中，原始换行符显示为一个空格。因此，如果您在项目服务器中查看此文件，您将看到：
 
 @browser{
 The first line of the 'first' paragraph. And a new line. The second paragraph --- isn't it great.
 }
 
 
-Not what we want.
+这不是我们想要的。
 
-So we need to make a decoder that will convert the newlines in our source into line breaks and paragraph breaks on the HTML output side. To do this, we use the @racket[decode-elements] function, which provides hooks to process categories of content within the document. 
+因此，我们需要制作一个解码器，将源代码中的换行符转换为 HTML 输出端的换行符和段落符。为此，我们使用 @racket[decode-elements] 函数，它提供了处理文档中内容类别的钩子。
 
-Add a basic @racket[decode-elements] to the source file like so:
+将基本的@racket[decode-elements] 添加到源文件中，如下所示：
 
 @fileblock["article.html.pm" @codeblock|{
 #lang pollen
@@ -696,13 +696,13 @@ And a new line.
 The second paragraph --- isn't it great.
 }|]
 
-Here, we'll keep the tag name @code{root}, leave the attributes as @code{empty}, and pass through our decoded list of elements.
+在这里，我们将保留标签名称@code{root}，将属性保留为@code{empty}，并通过我们解码后的元素列表。
 
-@margin-note{Racket jocks: you could also write this using @racket[quasiquote] and @racket[unquote-splicing] syntax as @code|{`(root ,@(decode-elements elements))}|. The @racket[txexpr] package is just an alternate way of accomplishing the task.}
+@margin-note{Racket jocks：您也可以使用 @racket[quasiquote] 和 @racket[unquote-splicing] 语法将其编写为 @code|{`(root ,@(decode-elements elements))}|。 @racket[txexpr] 包只是完成任务的另一种方式。}
 
-If you run this file, what changes? Right — nothing. That's because by default, @racket[decode-elements] will let the content pass through unaltered.
+如果你运行这个文件，有什么变化？对——没什么变化。这是因为默认情况下，@racket[decode-elements] 会让内容原封不动地通过。
 
-We change this by giving @racket[decode-elements] the name of a processing function and attaching it to the type of content we want to process. In this case, we're in luck — the @racket[decode] module already contains a @racket[decode-paragraphs] function (that also detects linebreaks). We add this function using the keyword argument @racket[#:txexpr-elements-proc], which is short for ``the function used to process the elements of a tagged X-expression'':
+我们通过给@racket[decode-elements] 一个处理函数的名称并将它附加到我们想要处理的内容类型来改变它。在这种情况下，我们很幸运——@racket[decode] 模块已经包含了一个 @racket[decode-paragraphs] 函数（也可以检测换行符）。我们使用关键字参数 @racket[#:txexpr-elements-proc] 添加这个函数，它是“用于处理标记 X 表达式的元素的函数”的缩写：
 
 @fileblock["article.html.pm" @codeblock|{
 #lang pollen
@@ -717,15 +717,15 @@ And a new line.
 The second paragraph --- isn't it great.
 }|]
 
-Now, when we run the file, the X-expression has changed to include two @racket[p] tags and a @racket[br] tag:
+现在，当我们运行该文件时，X 表达式已更改为包含两个 @racket[p] 标签和一个 @racket[br] 标签：
 
 @repl-output{'(root (p "The first line of the 'first' paragraph." (br) "And a new line.") (p "The second paragraph --- isn't it great."))}
 
-That means when we convert to HTML, we'll get the tags we want:
+这意味着当我们转换为 HTML 时，我们会得到我们想要的标签：
 
 @terminal{<root><p>The first line of the 'first' paragraph.<br />And a new line.</p><p>The second paragraph --- isn't it great.</p></root>}
 
-So when we view this in the project server, the linebreaks and paragraph breaks are displayed correctly:
+所以当我们在项目服务器中查看这个时，换行符和分段符显示正确：
 
 @browser{
 The first line of the 'first' paragraph.
@@ -735,7 +735,7 @@ The second paragraph --- isn't it great.
 }
 
 
-Of course, in practice you wouldn't put your decoding function in a single source file. You'd make it available to all your source files by putting it in @filepath{pollen.rkt}. So let's do that now:
+当然，在实践中，您不会将解码函数放在单个源文件中。您可以通过将其放在@filepath{pollen.rkt} 中使其对所有源文件可用。现在让我们这样做：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket
@@ -746,7 +746,7 @@ Of course, in practice you wouldn't put your decoding function in a single sourc
      #:txexpr-elements-proc decode-paragraphs)))
 }]
 
-We'll also restore the source of @filepath{article.html.pm} to its original, simplified state:
+我们还将@filepath{article.html.pm} 的源代码恢复到其原始的简化状态：
 
 @fileblock["article.html.pm" @codeblock|{
 #lang pollen
@@ -757,7 +757,7 @@ And a new line.
 The second paragraph --- isn't it great.
 }|]
 
-This time, @filepath{article.html.pm} will pull in the tag function for @racket[root] from @filepath{pollen.rkt}. Otherwise, the code hasn't changed, so the result in the project server will be the same:
+这一次，@filepath{article.html.pm} 将从@filepath{pollen.rkt} 中拉入@racket[root] 的标签函数。否则，代码没有改变，所以在项目服务器中的结果将是相同的：
 
 @browser{
 The first line of the 'first' paragraph.
@@ -766,11 +766,11 @@ And a new line.
 The second paragraph --- isn't it great.
 }
 
-But wait, those straight quotes look terrible. Also, three hyphens for an em dash? Barbaric. 
+但是等等，那些直引号看起来很糟糕。另外，一个破折号的三个连字符？野蛮。
 
-Let's upgrade our decoder to take of those. In @racket[pollen/misc/tutorial] I've stashed the two functions we'll need for the job: @racket[smart-quotes] and @racket[smart-dashes].
+让我们升级我们的解码器来处理这些。在@racket[pollen/misc/tutorial] 中，我储存了我们需要的两个函数：@racket[smart-quotes] 和@racket[smart-dashes]。 .
 
-This time, however, we're going to attach them to another part of @racket[decode-elements]. Smart-quote and smart-dash conversion only needs to look at the strings within the X-expression. So instead of attaching these functions to the @racket[#:txexpr-elements-proc] argument of @racket[decode-elements], we'll attach them to @racket[#:string-proc], which lets us specify a function to apply to strings:
+然而，这一次，我们将把它们附加到@racket[decode-elements] 的另一部分。 Smart-quote 和 smart-dash 转换只需要查看 X 表达式中的字符串。因此，不是将这些函数附加到@racket[decode-elements] 的@racket[#:txexpr-elements-proc] 参数，而是将它们附加到@racket[#:string-proc]，这样我们就可以指定一个应用于字符串的函数：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket/base
@@ -782,13 +782,13 @@ This time, however, we're going to attach them to another part of @racket[decode
      #:string-proc (compose1 smart-quotes smart-dashes))))
 }]
 
-Because @racket[#:string-proc] only accepts one function (not two), we need to use @racket[compose1] to combine @racket[smart-quotes] and @racket[smart-dashes] into one function (@racket[compose1], from the Racket library, creates a new function that applies each function in its argument list, from right to left).
+因为@racket[#:string-proc]只接受一个函数（而不是两个），我们需要使用　@racket[compose1]　将　@racket[smart-quotes]　和　@racket[smart-dashes]　合并成一个函数（@racket[compose1]，来自Racket库，创建一个新函数，从右到左应用其参数列表中的每个函数）。
 
-Now, if we run @filepath{article.html.pm} in DrRacket, we can see the effects of the new decoder functions. The quotes are curled, and the three hyphens become an em dash:
+现在，如果我们在 DrRacket 中运行@filepath{article.html.pm}，我们可以看到新解码器函数的效果。引号是卷曲的，三个连字符变成一个破折号：
 
 @repl-output{'(root (p "The first line of the ‘first’ paragraph." (br) "And a new line.") (p "The second paragraph—isn’t it great."))}
 
-And of course, this shows up in the project server too:
+当然，这也显示在项目服务器中：
 
 @browser{
 The first line of the ‘first’ paragraph.
@@ -797,22 +797,22 @@ And a new line.
 The second paragraph—isn’t it great.    
 }
 
-By the way, decoding via the @code{root} tag is often most convenient, but you don't have to do it that way. Decoding is just a special thing you can do inside any tag function. So you can make a decoder that only affects a certain tag on the page. Or you can make multiple decoders for different tags. The advantage of using a decoder with @code{root} is that it can affect all the content, and since it's attached to the root node, it will always be the last tag function that gets called.
+顺便说一句，通过@code{root} 标签解码通常是最方便的，但您不必那样做。解码只是您可以在任何标签函数中执行的特殊操作。所以你可以制作一个只影响页面上某个标签的解码器。或者您可以为不同的标签制作多个解码器。使用带有@code{root} 的解码器的优点是它可以影响所有内容，并且由于它附加到根节点，它始终是最后一个被调用的标记函数。
 
 
-@section{Putting it all together}
+@section{把它们放在一起}
 
-For this final example, we'll combine what we've learned in the first three tutorials. Though this project is still simple, it summarizes all the major concepts of Pollen. 
+对于最后一个示例，我们将结合我们在前三个教程中学到的内容。虽然这个项目仍然很简单，但它总结了 Pollen 的所有主要概念。
 
-It also provides a recipe you can adapt for your own projects, whether small or large. For instance, @italic{@link["http://practicaltypography.com"]{Butterick's Practical Typography}} and @italic{@link["http://typographyforlawyers.com"]{Typography for Lawyers}} follow this core structure.
+它还提供了一个配方，您可以根据自己的项目进行调整，无论大小。例如，@italic{@link["http://practicaltypography.com"]{Butterick's Practical Typography}} 和 @italic{@link["http://typographyforlawyers.com"]{Typography for Lawyers}} 遵循此核心结构。
 
-As we go through the ingredients, I'll review the purpose of each. Save these files into a single project directory with the project server running.
+当我们浏览这些成分时，我将回顾每种成分的用途。将这些文件保存到项目服务器运行的单个项目目录中。
 
-@subsection[#:tag-prefix "tutorial-3"]{The @filepath{pollen.rkt} file}
+@subsection[#:tag-prefix "tutorial-3"]{@filepath{pollen.rkt} 文件}
 
-This file provides functions that are automatically imported into Pollen source files in the same directory. It's written in standard Racket. The @filepath{pollen.rkt} file is optional — without it, your tags will just be treated as default tag functions. But you'll probably find it a convenient way to make tag functions available within your project, including a @racket[decode] function attached to @code{root}.
+该文件提供了自动导入同一目录下的 Pollen 源文件的功能。它是用标准的 Racket 编写的。 @filepath{pollen.rkt} 文件是可选的——没有它，你的标签将被视为默认标签函数。但是您可能会发现它是一种在您的项目中提供标记函数的便捷方式，包括附加到@code{root} 的@racket[decode] 函数。
 
-Here, we'll use the @filepath{pollen.rkt} we devised in the previous section to set up decoding for our source files:
+在这里，我们将使用我们在上一节中设计的@filepath{pollen.rkt} 来为我们的源文件设置解码：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket/base
@@ -825,13 +825,13 @@ Here, we'll use the @filepath{pollen.rkt} we devised in the previous section to 
 }]
 
 
-@subsection{The template}
+@subsection{模板}
 
-When you're using Pollen authoring mode for your content — using either Markdown syntax, or Pollen markup — your source files will produce an X-expression. To convert this X-expression into a finished file, you need to use a template. 
+当您对内容使用 Pollen 创作模式时（使用 Markdown 语法或 Pollen 标记），您的源文件将生成 X 表达式。要将此 X 表达式转换为完成的文件，您需要使用模板。
 
-By default, when Pollen finds a source file called @filepath{filename.ext.pm} or @filepath{filename.ext.pmd}, it will look for a template in your project directory called @filepath{template.ext}, where @filepath{.ext} is the matching output extension. 
+默认情况下，当 Pollen 找到名为 @filepath{filename.ext.pm} 或 @filepath{filename.ext.pmd} 的源文件时，它将在您的项目目录中查找名为 @filepath{template.ext} 的模板，其中@filepath{.ext} 是匹配的输出扩展名。
 
-In this project, we want to end up with HTML, so our source files will be called @filepath{filename.html.pm}, and thus we need to make a @filepath{template.html}. Let's use a modified version of the one we made in the second tutorial. As we did then, let's add the null extension to clearly indicate it's an input file, so the whole name is @filepath{template.html.p}:
+在这个项目中，我们希望以 HTML 结尾，因此我们的源文件将被称为@filepath{filename.html.pm}，因此我们需要创建一个@filepath{template.html}。让我们使用我们在第二个教程中制作的修改版本。正如我们当时所做的那样，让我们​​添加空扩展名以清楚地表明它是一个输入文件，所以全名是@filepath{template.html.p}：
 
 @fileblock["template.html.p"
 @codeblock[#:keep-lang-line? #f]{
@@ -855,9 +855,9 @@ In this project, we want to end up with HTML, so our source files will be called
 
 @subsection{The pagetree}
 
-A pagetree defines sequential and hierarchical relationships among a set of output files. The pagetree is used by the template to calculate navigational links (e.g., previous, next, up, etc.) A pagetree is optional — if you don't need navigation in your project, you don't need a pagetree.
+页面树定义了一组输出文件之间的顺序和层次关系。模板使用页面树来计算导航链接（例如，上一个、下一个、上一个等）。页面树是可选的 - 如果您的项目中不需要导航，则不需要页面树。
 
-But in this project, we do want navigation. So we'll add an @filepath{index.ptree} file like so:
+但在这个项目中，我们确实需要导航。所以我们将像这样添加一个@filepath{index.ptree} 文件：
 
 @fileblock["index.ptree"
 @codeblock{
@@ -870,13 +870,13 @@ sermon.html
 
 @subsection{A CSS stylesheet using the preprocessor}
 
-Our template file above refers to a CSS file called @filepath{styles.css}. When resolving linked files, the project server makes no distinction between static and dynamic files. If there's a static file called @filepath{styles.css}, it will use that. 
+我们上面的模板文件引用了一个名为 @filepath{styles.css} 的 CSS 文件。解析链接文件时，项目服务器不区分静态文件和动态文件。如果有一个名为 @filepath{styles.css} 的静态文件，它将使用它。
 
-Or, if you make a preprocessor source file called @filepath{styles.css.pp}, it will be dynamically rendered into the requested @filepath{styles.css} file. The preprocessor will operate on any file with the @filepath{.pp} extension — so a preprocessor source called @filepath{filename.ext.pp} will be rendered into @filepath{filename.ext}. (The corollary is that preprocessor functionality can be added to @italic{any} kind of text-based file.)
+或者，如果您制作了一个名为@filepath{styles.css.pp} 的预处理器源文件，它将动态呈现到请求的@filepath{styles.css} 文件中。预处理器将对任何扩展名为@filepath{.pp} 的文件进行操作——因此名为@filepath{filename.ext.pp} 的预处理器源将被渲染为@filepath{filename.ext}。 （推论是预处理器功能可以添加到@italic{any} 类型的基于文本的文件中。）
 
-Preprocessor source files, like authoring source files, get access to everything in @filepath{pollen.rkt}, so you can share common functions and variables.
+预处理器源文件，如创作源文件，可以访问@filepath{pollen.rkt} 中的所有内容，因此您可以共享常用函数和变量。
 
-Let's use an improved version of the dynamic CSS file we made in the first tutorial.
+让我们使用我们在第一个教程中制作的动态 CSS 文件的改进版本。
 
 @fileblock["styles.css.pp"
 @codeblock{
@@ -915,7 +915,7 @@ h1 {
 
 @subsection{The content source files using Pollen markup}
 
-With the scaffolding in place, we need the content. Our pagetree contains three output files — @filepath{burial.html}, @filepath{chess.html}, and @filepath{sermon.html}. We're going to make these output files using Pollen markup. So we'll create three source files and name them by adding the @filepath{.pm} source extension to each of the output names — thus @filepath{burial.html.pm}, @filepath{chess.html.pm}, and @filepath{sermon.html.pm}, as follows (and with apologies to T. S. Eliot):
+有了脚手架，我们就需要内容。我们的页面树包含三个输出文件——@filepath{burial.html}、@filepath{chess.html} 和 @filepath{sermon.html}。我们将使用 Pollen 标记制作这些输出文件。因此，我们将创建三个源文件并通过将 @filepath{.pm} 源扩展名添加到每个输出名称来命名它们 - 因此 @filepath{burial.html.pm}、@filepath{chess.html.pm}、和@filepath{sermon.html.pm}，如下（并向 T. S. Eliot 道歉）：
 
 
 @fileblock["burial.html.pm" @codeblock[#:keep-lang-line? #f]{
@@ -980,29 +980,29 @@ I made no comment. What should I resent?"
 
 @subsection{The result}
 
-Now visit the project server and view @filepath{burial.html}, which should look something like this (the box will expand to fit your browser window):
+现在访问项目服务器并查看@filepath{burial.html}，它应该看起来像这样（该框将展开以适合您的浏览器窗口）：
 
 @image/rp["burial.png" #:scale 0.8]
 
-Click the navigational links at the top to move between pages. I encourage you to change the source files, the style sheet, the template, or @filepath{pollen.rkt}, and see how these changes immediately affect the page rendering in the project server. (You can also change the sequence of the pages in @filepath{index.ptree}, but in that case, you'll need to restart the project server to see the change.)
+单击顶部的导航链接可在页面之间移动。我鼓励您更改源文件、样式表、模板或@filepath{pollen.rkt}，看看这些更改如何立即影响项目服务器中的页面呈现。 （您也可以更改 @filepath{index.ptree} 中的页面顺序，但在这种情况下，您需要重新启动项目服务器才能看到更改。）
 
-This page isn't a miracle of web design. But it shows you in one example:
+这个页面不是网页设计的奇迹。但它在一个示例中向您展示了：
 
 @itemlist[
 
-@item{Pollen markup being decoded — paragraph breaks, linebreaks, smart quotes, smart dashes — with a @racket[decode] function attached to the @code{root} node by @filepath{pollen.rkt}.}
+@item{正在解码的 Pollen 标记——分段符、换行符、智能引号、智能破折号——通过@filepath{pollen.rkt} 将@racket[decode] 函数附加到@code{root} 节点。}
 
-@item{A CSS file generated by the Pollen preprocessor that computes positions for CSS elements using numerical values set up with @racket[define], and mathematical conversions thereof.}
+@item{Pollen 预处理器生成的 CSS 文件，它使用 @racket[define] 设置的数值及其数学转换来计算 CSS 元素的位置。}
 
-@item{Navigational links that appear and disappear as needed using conditional statements (@racket[when/splice]) in @filepath{template.html.p}, with the page sequence defined by @filepath{index.ptree} and the names of the links being pulled from the @code{h1} tag of each source file using @racket[select].}
+@item{使用@filepath{template.html.p} 中的条件语句（@racket[when/splice]）根据需要出现和消失的导航链接，页面顺序由@filepath{index.ptree} 和名称定义使用@racket[select] 从每个源文件的@code{h1} 标记中提取的链接数量。}
 
 ]
 
 @section{Third tutorial complete}
 
-OK, that was a humongous tutorial. Congratulations on making it through.
+好吧，这是个庞大的教程。祝贺你顺利完成。
 
-But your reward is that you now understand all the core concepts of the Pollen publishing system, including the most important ones: the flexibility of Pollen markup, and the connection between tags and functions.
+但你的收获是，你现在了解了 Pollen 发布系统的所有核心概念，包括最重要的概念： Pollen 标记的灵活性，以及标签和函数之间的联系。
 
 
 
