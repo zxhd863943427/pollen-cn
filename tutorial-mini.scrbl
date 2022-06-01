@@ -7,29 +7,29 @@
 @(my-eval `(require pollen pollen/decode pollen/template pollen/tag xml racket/list txexpr))
 
 
-@title[#:tag "mini-tutorial"]{Mini tutorials}
+@title[#:tag "mini-tutorial"]{一些独立的小教程}
 
-Smaller, self-contained tasks.
+较小的、独立的任务。
 
 @section{Syntax highlighting}
 
-Neither Pollen nor Racket has its own syntax-highlighting library, but you can use an external syntax highlighter. Two options: Pygments or Highlight.js.
+Pollen 和 Racket 都没有自己的语法高亮库，但你可以使用一个外部的语法高亮器。有两个选择。Pygments 或 Highlight.js。
 
-Highlight.js is a JavaScript library, and thus meant to be run in the browser. So it's fine if your target is HTML, and you don't mind delegating that work to the browser. It's also easier to set up.
+Highlight.js 是一个 JavaScript 库，因此是为了在浏览器中运行。所以，如果你的目标是 HTML，而且你不介意把这项工作交给浏览器，那就没问题。它也更容易设置。
 
-Pygments is a Python library (though you don't need to know any Python to use it with Pollen). It runs alongside Pollen (in a separate process) as pages are rendered, so the syntax highlighting can be baked into your compiled files. If you want to target other formats aside from HTML, this is the better choice. It requires a little more setup, but I doubt anyone who's made it this far will have trouble.
+Pygments 是一个 Python 库（尽管你不需要知道任何 Python 就可以在 Pollen 中使用它）。它与 Pollen 一起运行（在一个单独的进程中），因为页面被渲染，所以语法高亮可以被植入你的编译文件。如果你想针对除 HTML 之外的其他格式，这是一个更好的选择。它需要更多的设置，但我怀疑任何已经做到这一步的人都会有问题。
 
 @subsection[#:tag "pygments-with-pollen"]{Using Pygments with Pollen}
 
-I used @link["http://pygments.org/"]{Pygments} for syntax highlighting in @link["https://beautifulracket.com/"]{@italic{Beautiful Racket}}. Links to the source are available at the bottom of the article.
+我使用@link["http://pygments.org/"]{Pygments} 在@link["https://beautifulracket.com/"]{@italic{Beautiful Racket}} 中完成了语法高亮。文章底部提供了指向源的链接。
 
 @itemlist[#:style 'ordered
 
-@item{Make sure you have @code{pygments} already installed. @link["http://pygments.org/download/"]{Instructions here.} Pretty easy — for instance, on my Mac OS machine, it simply require @code{easy_install pygments} at the command line.}
+@item{确保你已经安装了@code{pygments}。 @link["http://pygments.org/download/"]{Instructions here.} 非常简单——例如，在我的 Mac OS 机器上，它只需要在命令行中使用 @code{easy_install pygments}。}
 
-@item{The @racketmodname[pollen/unstable/pygments] helper module provides a function called @racket[highlight]. To make @racket[highlight] available in your source file, you can either add the line @code{◊(require pollen/unstable/pygments)} to the source file itself, or put it in @racket["pollen.rkt"] and @racket[provide] it from there.}
+@item{@racketmodname[pollen/unstable/pygments]辅助模块提供了一个名为@racket[highlight]的函数。要使@racket[highlight]在你的源文件中可用，你可以在源文件中加入一行@code{◊(require pollen/unstable/pygments)}，或者把它放在@racket["pollen.rkt"]中，然后从那里@racket[provide]（获得）它。}
 
-@item{To invoke Pygments, use @racket[highlight] by providing a language name like @racket['python] in the brackets (note quote mark at front of name) and then the code you want highlighted between curly braces.
+@item{要调用 Pygments，请使用 @racket[highlight]，方法是在括号中提供类似 @racket['python] 的语言名称（注意名称前面的引号），然后在大括号之间突出显示要突出显示的代码。
 
 @codeblock{
 #lang pollen
@@ -40,32 +40,32 @@ for x in range(3):
 }
 }
 
-When you run this file, you should see something like this, with the parsed syntax marked up into an X-expression:
+当你运行这个文件时，你应该会看到类似这样的内容，解析后的语法会标记为 X 表达式：
 
 @repl-output{
 '(div ((class "highlight")) (table ((class "sourcetable")) (tbody (tr (td ((class "linenos")) (div ((class "linenodiv")) (pre "1\n2"))) (td ((class "code")) (div ((class "source")) (pre (span ((class "k")) "for") " " (span ((class "n")) "x") " " (span ((class "ow")) "in") " " (span ((class "nb")) "range") (span ((class "p")) "(") (span ((class "mi")) "3") (span ((class "p")) "):") "\n    " (span ((class "k")) "print") " " (span ((class "n")) "x") "\n")) "\n")))) "\n")
 }
 }
 
-@item{To get highlighting, you'll still need to add styles to your CSS to change the appearance of the code. If you look at the @link["http://unitscale.com/mb/technique/styles.css.pp.html"]{CSS source in my demo article}, I just pasted a Pygments theme at the bottom (that @link["https://github.com/richleland/pygments-css"]{I picked up} and then edited with some variable values).
+@item{为了获得高亮，你仍然需要在你的 CSS 中添加样式来改变代码的外观。如果您查看 @link["http://unitscale.com/mb/technique/styles.css.pp.html"]{我的演示文章中的 CSS 源代码}，我只是在底部粘贴了一个 Pygments 主题（即 @link["https://github.com/richleland/pygments-css"]{我复制了一份主题} 然后编辑了其中一些变量的值）。
 }
 
 ]
  
-I concede that the last step isn’t convenient. But I haven’t yet figured out how it to make it easier. Larding the Pollen distribution with a bunch of Pygments themes doesn’t make sense. Moreover, even if convenient, they wouldn’t be editable / programmable, which is sort of the point of the whole exercise. 
+我承认最后一步并不方便。但我还没有弄清楚如何让它变得更容易。用一堆 Pygments 主题来填充 Pollen 发行版是没有意义的。此外，即使方便，它们也不能编辑/可编程，这是整个练习的重点。
 
-Anyhow, that's why it's in the @code{unstable} category — it works, but I think it could be done better.
+无论如何，这就是它在 @code{unstable} 类别中的原因——它有效，但我认为它可以做得更好。
 
 @subsection{Using Highlight.js with Pollen}
 
-Because @link["https://highlightjs.org/"]{Highlight.js} is browser-based, it doesn’t require any high-level cooperation from Pollen. You just add it to your project like an image or webfont or other linked asset.
+因为@link["https://highlightjs.org/"]{Highlight.js} 是基于浏览器的，所以不需要 Pollen 的任何高级别的配合。您只需将其添加到您的项目中，例如图像或网络字体或其他链接资产。
 
 
 @itemlist[#:style 'ordered
 
-@item{Download the @link["https://highlightjs.org/usage/"]{Highlight.js} library.}
+@item{下载@link["https://highlightjs.org/usage/"]{Highlight.js} 库。}
 
-@item{Add these lines to the @code{<head>} section of your @filepath{template.html} (or other template):
+@item{将这些行添加到您的@filepath{template.html}（或其他模板）的@code{<head>} 部分：
 
 @terminal{
 <link rel="stylesheet" href="/path/to/styles/default.css">
@@ -74,7 +74,7 @@ Because @link["https://highlightjs.org/"]{Highlight.js} is browser-based, it doe
 }
 }
 
-@item{With these resources loaded, Highlight.js will automatically highlight any code syntax with the markup @tt{<pre><code class="language-name">...</code></pre>}.  So in Pollen markup, you could write that directly like so: 
+@item{加载这些资源后，Highlight.js 将使用标记 @tt{<pre><code class="language-name">...</code></pre>} 自动语法高亮任何代码。所以在花粉标记中，你可以直接这样写：
 
 @codeblock{
 #lang pollen/markup
@@ -83,7 +83,7 @@ for x in range(3):
     print x
 }}}}
 
-@item{Or if you wanted to match the notation for @racketmodname[pollen/unstable/pygments], you could write a @tt{highlight} function that expands to markup that works for Highlight.js:
+@item{或者，如果您想匹配 @racketmodname[pollen/unstable/pygments] 的符号，您可以编写一个 @tt{highlight} 函数，该函数可以自动扩展为适用于 Highlight.js 的标记：
 
 @codeblock{
 #lang pollen/markup
@@ -95,19 +95,19 @@ for x in range(3):
 }}}
 ]
 
-As above, I concede that it would be more convenient to have Pollen automatically drop the necessary incantations into the @tt{<head>} of your HTML. But as a matter of policy, I prefer to minimize magic behavior.
+如上所述，我承认让 Pollen 自动将必要的标记放入你的 HTML 的@tt{<head>}中会更方便。但作为一个倾向问题，我更倾向于尽量减少魔法行为。
 
 
 
 @section{Math typesetting with MathJax}
 
-@link["http://www.mathjax.org"]{MathJax} is a JavaScript library that implements the math-typesetting algorithms of TeX. It's easy to add MathJax to a Pollen project, and then invoke it with Pollen command notation in your source files.
+@link["http://www.mathjax.org"]{MathJax} 是一个 JavaScript 库，用于实现 TeX 的数学排版算法。将 MathJax 添加到 Pollen 项目中很容易，然后在你的源文件中可以用 Pollen 命令符号调用它。
 
 @itemlist[#:style 'ordered
 
-@item{Download the @link["http://docs.mathjax.org/en/latest/start.html"]{MathJax} library if you want to run the library locally, without a network connection. You can also use a MathJax CDN like @link["https://cdnjs.com/"]{cdnjs} and just link to the library across the network (I'll use this option in the example that follows).}
+@item{如果您想在本地运行库，无需网络连接，请下载 @link["http://docs.mathjax.org/en/latest/start.html"]{MathJax} 库。你也可以使用像 @link["https://cdnjs.com/"]{cdnjs} 这样的 MathJax CDN 并通过网络链接到库（我将在下面的示例中使用此选项）。}
 
-@item{Add these lines to the @code{<head>} section of your @filepath{template.html} (or other template). First, the MathJax library itself:
+@item{将这些行添加到您的@filepath{template.html}（或其他模板）的@code{<head>} 部分。首先加入 MathJax 库本身：
 
 @terminal{
 <script type="text/javascript"
@@ -115,7 +115,7 @@ As above, I concede that it would be more convenient to have Pollen automaticall
 </script>
 }
 
-Then, add any configuration options. For instance, this will activate the dollar sign as an inline-equation delimiter:
+然后，添加需要的任何配置选项。例如，这将激活 $ 符号作为内联方程分隔符：
 
 @terminal{
 <script type="text/x-mathjax-config">
@@ -124,7 +124,7 @@ Then, add any configuration options. For instance, this will activate the dollar
 }
 }
 
-@item{Make Pollen tag functions that add the delimiter characters and also a @tt{mathjax} wrapper tag that will trigger the JavaScript typesetting. For instance, suppose we wanted to denote inline equations with @code{◊${equation …}} and block equations with @code{◊$${equation …}}. Our tag functions could look like this:
+@item{制作添加分隔符的 Pollen 标记函数以及将触发 JavaScript 排版的 @tt{mathjax} 包装标记。例如，假设我们想用@code{◊${equation ...}} 表示内联方程，并用@code{◊$${equation ...}} 表示块方程。我们的标签函数可能如下所示：
 
 @codeblock{
 #lang pollen
@@ -137,7 +137,7 @@ Then, add any configuration options. For instance, this will activate the dollar
 ]
 
 
-Putting it together, here's a minimal working example in two files (obviously in a larger project, you'd move those tag functions to a @filepath{pollen.rkt} file):
+把它放在一起，这是两个文件中的一个最小工作示例（显然在一个更大的项目中，你会将这些标签函数移动到一个 @filepath{pollen.rkt} 文件）：
 
 @fileblock["equation.html.pm"
 @codeblock{
@@ -170,4 +170,4 @@ MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$']]}});
 </html>
 }]
 
-By the way, there's no @code{pollen/math} module because this task doesn't seem complicated enough to merit it. What I just described is all you need.
+顺便说一句，没有 @code{pollen/math} 模块，因为这项任务似乎并不复杂，不值得这样做。我刚才描述的就是你所需要的一切。
