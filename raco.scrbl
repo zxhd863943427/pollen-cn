@@ -6,206 +6,206 @@
 @(my-eval `(require pollen pollen/file))
 
 
-@title[#:tag "raco-pollen"]{Using @exec{raco pollen}}
+@title[#:tag "raco-pollen"]{使用 @exec{raco pollen} 命令}
 
 
-Racket provides centralized command-line options through @exec{raco} (short for @exec{racket command}, see @other-doc['(lib "scribblings/raco/raco.scrbl")]). 
+Racket 通过 @exec{raco} 提供集中的命令行选项（@exec{racket command} 的缩写，参见@other-doc['(lib "scribblings/raco/raco.scrbl")]）。
 
-Once you install Pollen, you can access the following Pollen-specific commands through @racket[raco] using the subcommand @exec{raco pollen}.
+安装 Pollen 后，您可以使用子命令 @exec{raco pollen} 通过 @racket[raco] 访问以下特定的 Pollen 命令。
 
 @section{Making sure @exec{raco pollen} works}
 
-Open a terminal window and type:
+打开终端窗口并输入：
 
 @terminal{
 > raco pollen test}
 
-If @exec{raco pollen} is installed correctly, you'll see:
+如果@exec{raco pollen} 安装正确，您将看到：
 
 @terminal{raco pollen is installed correctly}
 
-But if you get:
+但如果你得到：
 
 @terminal{raco: Unrecognized command: pollen}
 
-You'll need to fix the problem before proceeding, most likely by reinstalling Pollen (see @secref["Installation" #:doc '(lib "pollen/scribblings/pollen.scrbl")]).
+你需要在继续之前解决这个问题，很可能是重新安装 Pollen（请参阅 @secref["Installation" #:doc '(lib "pollen/scribblings/pollen.scrbl")]）。
 
-If your error is like this:
+如果你的错误是这样的：
 
 @terminal{Unrecognized command: raco}
 
-You have a deeper problem with your Racket installation (often a misconfiguration of @code{PATH}).
+您的 Racket 安装存在更深层次的问题（通常是 @code{PATH} 的错误配置）。
 
 @section{@exec{raco pollen}}
 
-Same as @exec{raco pollen help}.
+与@exec{raco pollen help} 相同。
 
 @section{@exec{raco pollen help}}
 
-Displays a list of available commands.
+显示可用命令的列表。
 
 
 @section{@exec{raco pollen start}}
 
-Start the project server from the current directory using the default port, which is the value of the parameter @racket[current-server-port] (by default, port @id[default-project-server-port]).
+从当前目录启动项目服务器，使用默认端口，即参数 @racket[current-server-port] 的值（默认为端口 @id[default-project-server-port] ）。
 
 
-This command can be invoked with two optional arguments, and two optional switches.
+可以使用两个可选参数和两个可选开关调用此命令。
 
-@racket[raco pollen start _path] will start the project server from @racket[_path] rather than the current directory (making @racket[_path] its root directory).
+@racket[raco pollen start _path] 将从@racket[_path] 而不是当前目录启动项目服务器（使@racket[_path] 成为其根目录）。
 
 @terminal{
 > raco pollen start ~/path/to/project/}
 
-@racket[raco pollen start _path _port] will start the project server in @racket[_path] using @racket[_port] rather than @racket[current-server-port]. This is useful if you want to have multiple project servers running simultaneously.
+@racket[raco pollen start _path _port] 将使用@racket[_port] 而不是@racket[current-server-port] 在@racket[_path] 中启动项目服务器。如果您想同时运行多个项目服务器，这很有用。
 
 @terminal{
 > raco pollen start ~/path/to/project/
 > raco pollen start ~/path/to/project/scribblings 8088}
 
-If you want to start in the current directory but with a different port, use @litchar{.} as the path:
+如果你想在当前目录下启动，但使用不同的端口，请使用 @litchar{.} 作为路径。
 
 @terminal{
 > raco pollen start . 8088}
 
 
-@margin-note{Pollen defaults to port @id[default-project-server-port] because it's not commonly used by other network services. But Pollen has no idea what else is running on your machine. If @id[default-project-server-port] is already in use, you'll get an error when you try to start the Pollen project server. In that case, try a different port.}
+@margin-note{Pollen 默认使用端口 @id[default-project-server-port] 因为其他网络服务不常用它。但是 Pollen 不知道您的机器上还运行着什么。如果@id[default-project-server-port] 已经在使用中，当您尝试启动 Pollen 项目服务器时会出现错误。在这种情况下，请尝试不同的端口。}
 
 
-Adding the optional @exec{-l} or @exec{--launch} switch will open the main project dashboard in your web browser after the project server starts.
+添加可选的 @exec{-l} 或 @exec{--launch} 开关将在项目服务器启动后在 Web 浏览器中打开主项目仪表板。
 
-Adding the optional @exec{--local} switch will restrict the project server to responding to requests from localhost. (By default, the project server will respond to requests from any client.)
+添加可选的 @exec{--local} 开关将限制项目服务器对来自 localhost 的请求做出响应。(默认情况下，项目服务器将响应来自任何客户端的请求）。
 
 
 @section{@exec{raco pollen render}}
 
-This command can be invoked two ways: in source mode or directory mode.
+该命令可以通过两种方式调用：源文件模式或目录模式。
 
-In both modes, the optional @exec{--dry-run} or @exec{-d} switch prints the paths that would be rendered by this command without actually doing so. 
+在这两种模式下，可选的 @exec{--dry-run} 或 @exec{-d} 开关会打印出该命令所渲染的路径，而无需实际执行。
 
-In both modes, the optional @exec{--force} or @exec{-f} switch forces a fresh render from source, even if the file is already cached, by updating the modification date of the file (à la @exec{touch}). Thus, if modification dates are important to you, don't use this option.
+在这两种模式下，可选的 @exec{--force} 或 @exec{-f} 开关会通过更新文件的修改日期（类似于 @exec{touch} ），强制从源头进行新的渲染，即使该文件已经被缓存了。因此，如果修改日期对你很重要，不要使用这个选项。
 
-In both modes, the optional @exec{--null} or @exec{-n} switch renders as usual, but doesn't write any files. (Convenient if you're arranging special render behavior, for instance writing to a database or network server.)
+在这两种模式下，可选的 @exec{--null} 或 @exec{-n} 开关会像往常一样渲染，但不写入任何文件。(如果你要安排特殊的渲染行为，例如写到数据库或网络服务器，那就很方便了）。
 
 
 
-@bold{Source mode}: @racket[raco pollen render _source ...] will render only the source paths specified in @racket[_source ...]. Consistent with the usual command-line idiom, this can be a single path, a list of paths, or a pattern:
+@bold{Source 模式}：@racket[raco pollen render _source ...] 将仅渲染 @racket[_source ...] 中指定的源路径。与通常的命令行习惯用法一致，这可以是单个路径、路径列表或模式：
 
 @terminal{
 > raco pollen render foo.html.pm
 > raco pollen render foo.html.pm bar.html.pm zam.css.pp
 > raco pollen render *.html.pm}
 
-Paths can also be specified as output rather than input paths, and the corresponding source paths will be discovered:
+路径也可以被指定为输出而不是输入路径，相应的源文件路径将被发现：
 
 @terminal{
 > raco pollen render foo.html
 > raco pollen render foo.html bar.html zam.css}
 
-If a pagetree file is included in @racket[_source], all the files it lists will be rendered using the above rules.
+如果在 @racket[_source] 中包含了一个 pagetree 文件，它所列出的所有文件都将使用上述规则进行渲染。
 
-The optional @exec{--target} or @exec{-t} switch specifies the render target to use for multi-output source files. (Files of other types encountered in @racket[_source] will still be rendered as usual.) If the target is omitted, the renderer will use whatever target appears first in @racket[(setup:poly-targets)].
+可选的 @exec{--target} 或 @exec{-t} 开关指定了用于多输出源文件的渲染目标。(在 @racket[_source] 中遇到的其他类型的文件仍然会照常渲染。) 如果省略了目标，渲染器将使用 @racket[(setup:poly-targets)] 中首先出现的目标。
 
 @terminal{
 > raco pollen render -t pdf foo.poly.pm}
 
-See also @seclink["raco-pollen-render-poly"].
+另见 @seclink["raco-pollen-render-poly"] 。
 
-The optional @exec{--parallel} or @exec{-p} switch creates a set of parallel rendering jobs equal to the number of processing cores on the system. On a multi-core machine, this will usually make your rendering job finish faster. The order of rendering is not guaranteed, of course, so if your project depends on a certain order of rendering, don't use this option.
+可选的 @exec{--parallel} 或 @exec{-p} 开关会创建一组与系统中处理核心数量相等的并行渲染作业。在多核机器上，这通常会使你的渲染工作更快地完成。当然，渲染的顺序是不能保证的，所以如果你的项目依赖于一定的渲染顺序，不要使用这个选项。
 
 @terminal{
 > raco pollen render -p foo.html bar.html zam.css
 }
 
-The alternative @exec{--jobs <count>} or @exec{-j <count>} switch does the same thing, but takes one argument that creates @racket[<count>] parallel jobs (which can be more or less than the number of processing cores).
+替代的 @exec{--jobs <count>} 或 @exec{-j <count>} 开关做同样的事情，但需要一个参数来创建 @racket[<count>] 并行作业（可以多于或少于处理核心的数量）。
 
 @terminal{
 > raco pollen render -j 4 foo.html bar.html zam.css
 }
 
-As a rule of thumb, parallel rendering works best if you do @exec{raco setup} first, which updates Pollen's disk caches:
+根据经验，如果你先执行 @exec{raco setup} ，更新 Pollen 的磁盘缓存，那么并行渲染的效果最好：
 
 @terminal{
 > raco setup -p
 > raco pollen render -p 
 }
 
-@italic{Warning}: In all cases, the newly rendered output file will overwrite any previous output file.
+@italic{Warning}：在所有情况下，新渲染的输出文件将覆盖任何以前的输出文件。
 
-@bold{Directory mode}: @racket[raco pollen render _directory] renders all preprocessor source files and then all pagetree files found in the specified directory. If none of these files are found, a pagetree will be generated for the directory (which will include all source files, but also everything else that exists there; see @secref["The_automatic_pagetree"]) and then rendered. If the @racket[_directory] argument is omitted, the command defaults to the current directory.
+@bold{目录模式}: @racket[raco pollen render _directory] 渲染所有预处理器的源文件，然后渲染在指定目录下发现的所有 pagetree 文件。如果没有找到这些文件，将为该目录生成一个 pagetree（它将包括所有的源文件，但也包括那里存在的所有其他文件；见 @secref["The_automatic_pagetree"] ），然后进行渲染。如果省略了 @racket[_directory] 参数，该命令默认为当前目录。
 
-In directory mode, this command can be invoked with two other optional arguments (in addition to the @exec{--target}, @exec{--parallel}, and  @exec{--jobs} switches mentioned above):
+在目录模式下，这个命令可以用另外两个可选参数来调用（除了上面提到的 @exec{--target} 、 @exec{--parallel} 和 @exec{--jobs} 开关之外）。
 
-The @exec{--subdir} or @exec{-s} switch also renders subdirectories. @racket[current-project-root] remains fixed at the initial directory, just as it would be in the project server after invoking @racket[raco pollen start]. 
+@exec{--subdir}或 @exec{-s} 开关也会渲染子目录。 @racket[current-project-root] 仍然固定在初始目录，就像调用@racket[raco pollen start]后在项目服务器中的情况。
 
-Certain subdirectories are automatically ignored, including Racket and Pollen private directories (like @tt{compiled}) and source-control directories (like @tt{.git} and @tt{.svn}). You can omit other paths by overriding @racket[default-omitted-path?]. You can override these omissions — that is, force a path to be included in a recursive render — by overriding @racket[default-extra-path?].
+某些子目录会被自动忽略，包括 Racket 和 Pollen 的私有目录（如 @tt{compiled} ）和源代码控制目录（如 @tt{.git} 和 @tt{.svn} ）。你可以通过覆盖 @racket[default-omitted-path?] 省略其他路径。你可以通过覆盖 @racket[default-extra-path?] 来覆盖这些省略——也就是说，在递归渲染中强制包含一个路径。
 
-The @exec{--recursive} or @exec{-r} switch renders subdirectories recursively. Meaning, each subdirectory is treated like an independent subproject, and @racket[current-project-root] moves around accordingly. In many projects, there won't be any difference between the @exec{-s} and @exec{-r} switches. But if the difference matters in your project, you have them both.
+@exec{--recursive}或 @exec{-r} 开关会递归地渲染子目录。意思是，每个子目录被当作一个独立的子项目， @racket[current-project-root] 会相应地移动。在许多项目中， @exec{-s} 和 @exec{-r} 开关之间没有任何区别。但如果在你的项目中，这种区别很重要的话，你可以同时拥有它们。
 
 
 
 
 @section{@exec{raco pollen publish}}
 
-Make a copy of the project directory on the desktop, but without any source files or other Pollen-related files. (This function is pretty lame, and I invite suggestions for improvement.)
+在桌面上复制项目目录，但没有任何源文件或其他 Pollen 相关文件。 （这个功能比较鸡肋，请大家提出改进意见。）
 
-@racket[raco pollen publish _project-dir] will publish the project in @racket[_project-dir] onto the desktop in a folder called @racket[publish]. @bold{Warning}: if @racket[publish] already exists on the desktop, it will be overwritten.
+@racket[raco pollen publish _project-dir] 会将@racket[_project-dir] 中的项目发布到桌面上名为@racket[publish] 的文件夹中。 @bold{警告}：如果桌面上已经存在 @racket[publish] ，它将被覆盖。
 
-@racket[raco pollen publish _project-dir _dest-dir] will publish the project in @racket[_project-dir] to @racket[_dest-dir] rather than the desktop. @bold{Warning}: if @racket[_dest-dir] already exists, it will be overwritten by the newly published directory.
+@racket[raco pollen publish _project-dir _dest-dir] 会将@racket[_project-dir] 中的项目发布到@racket[_dest-dir] 而不是桌面。 @bold{警告}：如果 @racket[_dest-dir] 已经存在，它将被新发布的目录覆盖。
 
-If you're already in your project directory and want to publish somewhere other than the desktop, use @racket[raco pollen publish _. _dest-dir].
+如果你已经在你的项目目录中，并且想在桌面以外的地方发布，使用@racket[raco pollen publish _. _dest-dir]。
 
-By default, this command will automatically overwrite the destination directory. Adding the optional @exec{-c} or @exec{--confirm} switch will ask for confirmation if the destination already exists.
+默认情况下，此命令将自动覆盖目标目录。添加可选的 @exec{-c} 或 @exec{--confirm} 开关将要求确认目标文件是否已经存在。
 
-You can determine the default publishing destination for a project by overriding @racket[default-publish-directory].
+您可以通过覆盖 @racket[default-publish-directory] ​​来确定项目的默认发布目标。
 
-Certain files and directories are automatically omitted from the published directory, including Racket and Pollen sources, Pollen caches, and source-control directories (like @tt{.git} and @tt{.svn}). You can omit other files by overriding @racket[default-omitted-path?]. You can override these omissions — that is, force a path to be published — by overriding @racket[default-extra-path?].
+某些文件和目录会自动从发布目录中省略，包括 Racket 和 Pollen 源、Pollen 缓存和源控制目录（如 @tt{.git} 和 @tt{.svn}）。您可以通过覆盖 @racket[default-omitted-path?] 来省略其他文件。您可以通过覆盖 @racket[default-extra-path?] 来覆盖这些遗漏——即强制发布路径。
 
-The optional @exec{--dry-run} or @exec{-d} switch prints the source and destination directories for publishing without actually doing so. If the destination-directory path cannot be created, an error will arise.
+可选的 @exec{--dry-run} 或 @exec{-d} 开关会打印用于发布的源目录和目的目录，而无需实际这样发布。如果不能创建目标目录路径，就会出现错误。
 
 @section{@exec{raco pollen setup}}
 
-Finds Pollen source files in the current directory, compiles them, and loads the results into the @seclink["Cache" #:doc '(lib "pollen/scribblings/pollen.scrbl")]. This will give you the snappiest performance during an interactive session with the project server. 
+在当前目录中查找 Pollen 源文件，对其进行编译，并将结果加载到 @seclink["Cache" #:doc '(lib "pollen/scribblings/pollen.scrbl")] 中。这将在与项目服务器的交互会话期间为您提供最快速的性能。
 
-Can also be invoked as @racket[raco pollen setup _directory], which will set up the files in @racket[_directory].
+也可以作为@racket[raco pollen setup _directory] ​​调用，它将设置@racket[_directory] ​​中的文件。
 
-The optional @exec{--parallel} or @exec{-p} switch creates a set of parallel setup jobs equal to the number of processing cores on the system. On a multi-core machine, this will usually make your setup finish faster.
+可选的 @exec{--parallel} 或 @exec{-p} 开关会创建一组与系统中处理核心数量相等的并行设置作业。在多核机器上，这通常会使你的设置更快地完成。
 
 @terminal{
 > raco pollen setup -p
 }
 
-The alternative @exec{--jobs <count>} or @exec{-j <count>} switch does the same thing, but takes one argument that creates @racket[<count>] parallel jobs (which can be more or less than the number of processing cores).
+替代的 @exec{--jobs <count>} 或 @exec{-j <count>} 开关做同样的事情，但需要一个参数来设置 @racket[<count>] 并行作业的数量（可以多于或少于处理核心的数量）。
 
 @terminal{
 > raco pollen setup -j 4
 }
 
-@margin-note{As of mid-2020, Pollen's parallel-processing performance under the CS (= Chez Scheme) variant of Racket is worse than ordinary Racket. If you use Racket CS, you may get better results using @exec{-j 4} (which will limit the operation to four cores) than @exec{-p} (which will use all available cores).}
+@margin-note{截至 2020 年中期，Pollen 在 Racket 的 CS（= Chez Scheme）变体下的并行处理性能比普通 Racket 差。如果你使用 Racket CS，使用 @exec{-j 4} （将操作限制在四个核心）可能会比 @exec{-p} （将使用所有可用核心）得到更好的结果。}
 
-The optional @exec{--dry-run} or @exec{-d} switch prints the paths that would be compiled by this command without actually doing so.
+可选的 @exec{--dry-run} 或 @exec{-d} 会开关打印将由该命令编译的路径，而不实际这样做。
 
 
 @section{@exec{raco pollen reset}}
 
-Resets Pollen's @seclink["Cache" #:doc '(lib "pollen/scribblings/pollen.scrbl")] by deleting the cache directories, including @tt{compiled} directories created by Racket. Use this when you need a fresh start in life.
+重置 Pollen 的 @seclink["Cache" #:doc '(lib "pollen/scribblings/pollen.scrbl")] ，删除缓存目录，包括 Racket 创建的 @tt{compiled} 目录。当你需要一个新的生成起点时，请使用这个方法。
 
-Can also be invoked as @racket[raco pollen reset _directory], which will reset a different project @racket[_directory].
+也可以作为@racket[raco pollen reset _directory] ​​调用，这将会把一个不同目录 @racket[_directory] 的项目重置。
 
 @section{@exec{raco pollen version}}
 
-Would you believe this prints the Pollen version number.
+你相信吗，这会打印 Pollen 的版本号。
 
 @section{The @exec{POLLEN} environment variable}
 
-Pollen recognizes a @exec{POLLEN} environment variable on the command line, which can be used to pass through any value you like. This value can be used within your project files with @racket[(getenv "POLLEN")], which if not set, returns @racket[#f]. Take this file, for instance:
+Pollen 能在命令行中识别一个 @exec{POLLEN} 环境变量，它可以用来传递你喜欢的任何值。这个值可以在你的项目文件中使用@racket[(getenv "POLLEN")]设置，如果没有设置，返回 @racket[#f] 。以这个文件为例：
 
 @fileblock["test.txt.pp" @codeblock{
 #lang pollen
 Result is ◊or[(getenv "POLLEN")]{nothing}
 }]
 
-The @exec{POLLEN} environment variable will change how it's rendered:
+这个 @exec{POLLEN} 环境变量将改变它的渲染结果。
 
 @terminal{
 > raco pollen render test.txt ; cat test.txt
@@ -222,35 +222,35 @@ Result is DEBUG
 
 @section{Logging & the @exec{PLTSTDERR} environment variable}
 
-@margin-note{See @secref["logging" #:doc '(lib "scribblings/reference/reference.scrbl")] for an introduction to Racket's logging system.}
+@margin-note{参见@secref["logging" #:doc '(lib "scribblings/reference/reference.scrbl")] 了解 Racket 的日志记录系统。}
 
-By default, Pollen will log messages at the @racket['info] level or above to the console during any terminal session (e.g., project server or rendering job). So if you start the project server like so:
+默认情况下，Pollen 将在任何终端会话（例如，项目服务器或渲染作业）期间将 @racket['info] 级别或更高级别的消息记录到控制台。因此，如果您像这样启动项目服务器：
 
 @terminal{
 > raco pollen start
 } 
 
-You will see log messages starting with:
+你会看到以下列内容开始的日志信息：
 
 @terminal{
 pollen: starting project server ...
 }
 
-And so forth.
+等等。
 
-You can use Racket's @racket[PLTSTDERR] environment variable to adjust the level of logging. If you provide an explicit log level for Pollen, it will override this default behavior. So if you only want to see messages at the @racket['error] level or above, you would invoke the project server like so:
+您可以使用 Racket 的 @racket[PLTSTDERR] 环境变量来调整日志记录的级别。如果您为 Pollen 提供明确的日志级别，它将覆盖此默认行为。因此，如果您只想查看 @racket['error] 级别或更高级别的消息，您可以像这样调用项目服务器：
 
 @terminal|{
 > PLTSTDERR=error@pollen raco pollen start
 }|
 
-After this, the project server will work normally, but you won't see the usual @racket['info]-level messages, and instead will only see @racket['error] messages or above.
+在此之后，项目服务器将正常工作，但您不会看到通常的@racket['info] 级别的消息，而只会看到@racket['error] 或更高级别的消息。
 
-Conversely, if you want more detailed logging, you can invoke the @racket['debug] log level like so:
+相反，如果您想要更详细的日志记录，您可以调用 @racket['debug] 日志级别，如下所示：
 
 @terminal|{
 > PLTSTDERR=debug@pollen raco pollen start
 }|
 
-Then you'll see the usual @racket['info] messages, plus a bunch more.
+然后你会看到通常的 @racket['info] 信息，再加上一堆其他信息。
 
