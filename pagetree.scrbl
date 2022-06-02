@@ -9,26 +9,25 @@
 
 @defmodule[pollen/pagetree]
 
-Books and other long documents are usually organized in a structured way — at minimum they have a sequence of pages, but more often they have sections with subsequences within. Individual pages in a Pollen project don't know anything about how they're connected to other pages. In theory, you could maintain this information within the source files. But this would be a poor use of human energy.
+书籍和其他长文件通常是以结构化的方式组织的--它们至少有一个页面的序列，但更多的是它们有一些章节，其中有一些子序列。 Pollen 项目中的单个页面并不了解它们与其他页面的连接方式。理论上，你可以在源文件中维护这些信息。但这将是对人类精力的一种浪费。
 
-Instead, use a pagetree. A @italic{pagetree} is a simple abstraction for defining & working with sequences of @italic{pagenodes}. Typically these pagenodes will be the names of output files in your project. 
+取而代之的是，使用pagetree。一个 @italic{pagetree} 是一个简单的抽象，用于定义和处理 @italic{pagenodes} 的序列。通常，这些pagenodes是你项目中输出文件的名称。
 
-``So it's a list of web-page filenames?'' Sort of. When I think of a web page, I think of an actual file on a disk. Keeping with Pollen's orientation toward dynamic rendering, pagenodes may — and often do — refer to files that don't yet exist. Moreover, by referring to output names rather than source names, you retain the flexibility to change the kind of source associated with a particular pagenode (e.g., from preprocessor source to Pollen markup).
+``所以它是一个网页文件名列表？'' 有点。当我想到网页时，我会想到磁盘上的实际文件。与 Pollen 的动态渲染方向保持一致，页面节点可能（并且经常这样做）引用尚不存在的文件。此外，通过引用输出名称而不是源名称，您可以灵活地更改与特定页面节点关联的源类型（例如，从preprocessor 源文件到 Pollen markup）。
 
-Pagetrees can be flat or hierarchical. A flat pagetree is just a @seclink["Lists__Iteration__and_Recursion"
-#:doc '(lib "scribblings/guide/guide.scrbl")]{list} of pagenodes. A hierarchical pagetree can also contain recursively nested lists of pagenodes. But you needn't pay attention to this distinction, as the pagetree functions don't care which kind you use. Neither do I.
+页面树可以是平面的或分层的。平面页面树只是页面节点的 @seclink["Lists__Iteration__and_Recursion" #:doc '(lib "scribblings/guide/guide.scrbl")]{list}。分层页面树还可以包含递归嵌套的页面节点列表。但是你不需要注意这种区别，因为pagetree函数并不关心你使用哪种类型。我也不关心。
 
-Pagetrees surface throughout the Pollen system. They're primarily used for navigation — for instance, calculating ``previous,'' ``next,'' or ``up'' links for a given page. A special pagetree, @filepath{index.ptree}, is used by the project server to order the files in a dashboard. Pagetrees can also be used to define batches of files for certain operations, for instance @secref["raco_pollen_render" #:doc '(lib "pollen/scribblings/pollen.scrbl")]. You might find other uses for them too.
+在整个 Pollen 系统中都有Pagetrees。它们主要用于导航--例如，计算特定页面的 "上一页"、"下一页 "或 "向上 "链接。一个特殊的pagetree， @filepath{index.ptree} ，被项目服务器用来排列仪表板中的文件。Pagetrees也可以用来为某些操作定义成批的文件，例如@secref["raco_pollen_render" #:doc '(lib "pollen/scribblings/pollen.scrbl") ]。你可能也会发现它们的其他用途。
 
 
 
 @section{Making pagetrees with a source file}
 
-A pagetree source file either starts with @code{#lang pollen} and uses the @racketfont{@(format ".~a" pollen-pagetree-source-ext)} extension, or starts with @code{#lang pollen/ptree} and then can have any file extension. 
+一个pagetree源文件要么以@code{#lang pollen}开头并使用@racketfont{@(format ".~a" pollen-pagetree-source-ext)}扩展名，要么以@code{#lang pollen/ptree}开头，然后可以有任何文件扩展名。
 
-Unlike other Pollen source files, since the pagetree source is not rendered into an output format, the rest of the filename is up to you.
+与其他 Pollen 源文件不同，由于 pagetree 源不呈现为输出格式，因此文件名的其余部分由您决定。
 
-Here's a flat pagetree. Each line is considered a single pagenode (blank lines are ignored). Notice that no Pollen command syntax nor quoting is needed within the pagetree source:
+这是一个平面页面树。每一行都被认为是一个单独的页面节点（空白行被忽略）。请注意，在 pagetree 源代码中不需要 Pollen 命令语法或引用：
 
 @fileblock["flat.ptree" @codeblock{
 #lang pollen
@@ -39,13 +38,13 @@ main_argument.html
 conclusion.html
 }]
 
-And here's the output in DrRacket:
+这是 DrRacket 中的输出：
 
 @repl-output{'(pagetree-root index.html introduction.html main_argument.html conclusion.html)}
 
-Keeping with usual Pollen policy, this is an @seclink["X-expressions" #:doc '(lib "pollen/scribblings/pollen.scrbl")]{X-expression}. The @racket[pagetree-root] is just an arbitrary tag that contains the pagetree.
+与通常的 Pollen 策略保持一致，这是一个 @seclink["X-expressions" #:doc '(lib "pollen/scribblings/pollen.scrbl")]{X-expression}。 @racket[pagetree-root] 只是一个包含页面树的任意标签。
 
-Upgrading to a hierarchical pagetree is simple. The same basic rule applies — one pagenode per line. But this time, you add Pollen command syntax: a lozenge @litchar{◊} in front of a pagenode marks it as the top of a nested list, and the sub-pagenodes of that list go between @litchar{@"{"} curly braces @litchar{@"}"}, like so:
+升级到分层页面树很简单。同样的基本规则也适用——每行一个页面节点。但这一次，您添加 Pollen 命令语法：在页面节点前面的菱形 @litchar{◊} 将其标记为嵌套列表的顶部，并且该列表的子页面节点位于 @litchar{@"{"} 之间花括号@litchar{@"}"}，像这样：
 
 @fileblock["hierarchical.ptree" @codeblock{
 #lang pollen
@@ -62,13 +61,13 @@ toc.html
 bibliography.html
 }]
 
-The output of our hierarchical pagetree:
+我们的分层页面树的输出：
 
 @repl-output{'(pagetree-root toc.html (first-chapter.html foreword.html introduction.html) (second-chapter.html (main-argument.html facts.html analysis.html) conclusion.html) bibliography.html)}
 
-One advantage of using a source file is that when you run it in DrRacket, it will automatically be checked using @racket[validate-pagetree], which insures that every element in the pagetree meets @racket[pagenode?], and that all the pagenodes are unique. 
+使用源文件的一个好处是，当你在 DrRacket 中运行它时，它会自动使用 @racket[validate-pagetree] 进行检查，确保页面树中的每个元素都符合 @racket[pagenode?] ，并且所有的页面节点是唯一的。
 
-This pagetree has a duplicate pagenode, so it won't run:
+这个页面树有一个重复的页面节点，所以它无法运行：
 
 @fileblock["duplicate-pagenode.ptree" @codeblock{
 #lang pollen
@@ -80,11 +79,11 @@ conclusion.html
 index.html
 }]
 
-Instead, you'll get an error:
+相反，你会得到一个错误：
 
 @errorblock{validate-pagetree: members-unique? failed because item isn’t unique: (index.html)}
 
-Pagenodes can refer to files in subdirectories. Just write the pagenode as a path relative to the directory where the pagetree lives:
+页面节点可以引用子目录中的文件。只需将 pagenode 写为相对于 pagetree 所在目录的路径：
 
 @fileblock["flat.ptree" @codeblock{
 #lang pollen
@@ -103,7 +102,7 @@ conclusion.html
 
 @section{Making pagetrees by hand}
 
-Because a pagetree is just an X-expression, you can synthesize a pagetree using any Pollen or Racket tools for making X-expressions. For example, here's some Racket code that generates the same pagetree as the @filepath{flat.ptree} source file above:
+因为页面树只是一个 X 表达式，所以您可以使用任何 Pollen 或 Racket 工具来制作 X 表达式以合成一个页面树。例如，这里有一些生成与上面的 @filepath{flat.ptree} 源文件相同页面树的 Racket 代码：
 
 @fileblock["make-flat-ptree.rkt" @codeblock{
 #lang racket
@@ -114,11 +113,11 @@ Because a pagetree is just an X-expression, you can synthesize a pagetree using 
 (if (pagetree? pt) pt "Oops, not a pagetree")
 }]
 
-Note that you need to take more care when building a pagetree by hand. Pagenodes are symbols, not strings, thus the use of @racket[string->symbol] is mandatory. One benefit of using a pagetree source file is that it takes care of this housekeeping for you.
+请注意，在手动构建页面树时需要更加小心。页面节点是符号，而不是字符串，因此必须使用 @racket[string->symbol] 。使用 pagetree 源文件的一个好处是它会为您处理这些事务。
 
 @section{Nesting pagetrees}
 
-You can put other pagetrees within a pagetree. Since every pagetree is an X-expression, you can nest pagetrees as you would ordinary X-expressions. Suppose you have this pagetree:
+您可以将其他页面树放在页面树中。由于每个页面树都是一个 X 表达式，因此您可以像嵌套普通 X 表达式一样嵌套页面树。假设你有这个页面树：
 
 @fileblock["sub.ptree" @codeblock{
 #lang pollen
@@ -126,7 +125,7 @@ three
 four
 }]
 
-And you want to add it to an existing pagetree:
+并且您想将其添加到现有的页面树中：
 
 @fileblock["index.ptree" @codeblock{
 #lang pollen
@@ -135,7 +134,7 @@ two
 five
 six}]
 
-You can @racket[require] @filepath{sub.ptree} to import its @racket[doc]. Be sure to use @racket[prefix-in] so that the imported @racket[doc] ends up with a distinct name that doesn't conflict with the @racket[doc] that's already part of the current file:
+你可以 @racket[require] @filepath{sub.ptree} 来导入它的 @racket[doc] 。请务必使用 @racket[prefix-in] 以便导入的 @racket[doc] 以一个不同的名称结束，该名称与已经是当前文件一部分的 @racket[doc] 不冲突：
 
 @fileblock["index.ptree" @codeblock{
 #lang pollen
@@ -146,15 +145,15 @@ two
 five
 six}]
 
-And you'll get this:
+你会得到这个：
 
 @repl-output{'(pagetree-root one two three four five six)}
 
-Pollen does one bit of housekeeping for you, which is that it automatically drops the root node of the imported pagetree, and splices the remaining nodes into the parent pagetree at the insertion point. Otherwise you'd get this, which is probably not what you wanted:
+Pollen 为你做了一点点事务，就是它会自动丢弃导入的 pagetree 的根节点，并在插入点将剩余的节点拼接到父 pagetree 中。否则你会得到这个，这可能不是你想要的：
 
 @repl-output{'(pagetree-root one two (pagetree-root three four) five six)}
 
-But if you do want the imported pagetree under a subnode, just add a containing pagenode as usual:
+但如果您确实希望导入的页面树位于子节点下，只需像往常一样添加一个包含页面节点：
 
 @fileblock["index.ptree" @codeblock{
 #lang pollen
@@ -167,11 +166,11 @@ two
 five
 six}]
 
-Which will give you:
+这会给你：
 
 @repl-output{'(pagetree-root one two (subtree three four) five six)}
 
-If you want to combine a number of pagetrees, @racket[require] can get cumbersome because you have to juggle multiple @racket[doc] imports (which can be done with @racket[prefix-in], but it's still juggling). Instead, you can use @racket[dynamic-require] to put each imported pagetree where you want it. 
+如果您想组合多个页面树， @racket[require] 可能会变得很麻烦，因为您必须同时处理多个 @racket[doc] 导入（可以使用 @racket[prefix-in] 来完成，但它仍然需要处理）。相反，您可以使用 @racket[dynamic-require] 将每个导入的页面树放在您想要的位置。
 
 @fileblock["index.ptree" @codeblock{
 #lang pollen
@@ -185,7 +184,7 @@ nine
 ten
 }]
 
-Nesting pagetrees won't circumvent the usual rule against duplicate pagenodes. So this pagetree, which tries to nest @filepath{sub.ptree} twice, won't work:
+嵌套页面树不会规避针对重复页面节点的常规规则。所以这个试图嵌套 @filepath{sub.ptree} 两次的页面树将不起作用：
 
 @fileblock["index.ptree" @codeblock{
 #lang pollen
@@ -199,26 +198,26 @@ six
 
 @section{The automatic pagetree}
 
-In situations where Pollen needs a pagetree but can't find one, it will automatically synthesize a pagetree from a listing of files in the directory. This arises most frequently when @secref["The_project_dashboard"] in a directory that doesn't contain an explicit @filepath{index.ptree}. This way, you can get going with a project without having to stop for @racketfont{.ptree} housekeeping.
+在 Pollen 需要一个页面树但找不到的情况下，它会自动从目录中的文件列表合成一个页面树。当 @secref["The_project_dashboard"] 位于不包含显式 @filepath{index.ptree} 的目录中时，这种情况最常见。这样，您就可以开始一个项目，而不必停下来为 @racketfont{.ptree} 做家务。
 
-As usual, convenience has a cost. Pollen doesn't know anything about which files in your directory are relevant to the project, so it includes all of them. For instance, if you start your project server on a Mac OS desktop, you'll see things like @filepath{Thumbs.db} and @filepath{desktop.ini}. 
+像往常一样，便利是有代价的。 Pollen 不知道您目录中的哪些文件与项目相关，因此它包含所有这些文件。例如，如果您在 Mac OS 桌面上启动项目服务器，您会看到类似 @filepath{Thumbs.db} 和 @filepath{desktop.ini} 的内容。
 
-Also, though you can use pagetree-navigation functions like @racket[next] or @racket[siblings] with an automatic pagetree, the results of these functions are apt to include irrelevant files. So if you need to do pagetree navigation, that's probably the point where you want to start using an explicit pagetree.
+此外，尽管您可以将 @racket[next] 或 @racket[siblings] 之类的页面树导航函数与自动页面树一起使用，但这些函数的结果很容易包含不相关的文件。因此，如果您需要进行页面树导航，这可能就是您想要开始使用显式页面树的地方。
 
 
 @section{Using pagetrees for navigation}
 
-Typically you'll call the pagetree-navigation functions from inside templates, using the special variable @racket[here] as the starting point. For more on this technique, see @secref["Pagetree_navigation" #:tag-prefixes '( "tutorial-2")].
+通常，您将从模板内部调用 pagetree-navigation 函数，使用特殊变量 @racket[here] 作为起点。有关此技术的更多信息，请参阅@secref["Pagetree_navigation" #:tag-prefixes '("tutorial-2")]。
 
 @section{Using @filepath{index.ptree} in the dashboard}
 
-When you're using the project server to view the files in a directory, the server will first look for a file called @filepath{index.ptree}. If it finds this pagetree file, it will use it to build the dashboard. If not, then it will synthesize a pagetree using a directory listing. For more on this technique, see @secref["The_project_dashboard"].
+当您使用项目服务器查看目录中的文件时，服务器将首先查找名为 @filepath{index.ptree} 的文件。如果它找到这个 pagetree 文件，它将使用它来构建仪表板。如果没有，那么它将使用目录列表合成一个页面树。有关此技术的更多信息，请参阅 @secref["The_project_dashboard"] 。
 
 @section{Using pagetrees with @exec{raco pollen render}}
 
-The @exec{raco pollen render} command is used to regenerate an output file from its source. If you pass a pagetree to @exec{raco pollen render}, it will automatically render each file listed in the pagetree.
+@exec{raco pollen render} 命令用于从其源重新生成输出文件。如果您将页面树传递给@exec{raco pollen render}，它将自动渲染页面树中列出的每个文件。
 
-For instance, many projects have auxiliary pages that don't really belong in the main navigational flow. You can collect these pages in a separate pagetree:
+例如，许多项目都有辅助页面，这些页面实际上不属于主导航流。您可以在单独的页面树中收集这些页面：
 
 @fileblock["utility.ptree" @codeblock{
 #lang pollen
@@ -229,7 +228,7 @@ webmaster.html
 [... and so on]
 }]
 
-Thus, when you're using pagetree-navigation functions within a template, you can use your main pagetree, and restrict the navigation to the main editorial content. But when you render the project, you can pass both pagetrees to @exec{raco pollen render}.
+因此，当您在模板中使用页面树导航功能时，可以使用主页面树，并将导航限制为主要编辑内容。但是当你渲染项目时，你可以将两个页面树都传递给@exec{raco pollen render}。
 
 For more on this technique, see @secref["raco_pollen_render" #:doc '(lib "pollen/scribblings/pollen.scrbl")].
 
@@ -243,7 +242,7 @@ For more on this technique, see @secref["raco_pollen_render" #:doc '(lib "pollen
 (pagetree?
 [possible-pagetree any/c])
 boolean?]
-Test whether @racket[_possible-pagetree] is a valid pagetree. It must be a @racket[txexpr?] where all elements are @racket[pagenode?], and each is unique within @racket[_possible-pagetree] (not counting the root node).
+测试 @racket[_possible-pagetree] 是否是有效的页面树。它必须是一个 @racket[txexpr?] ，其中所有元素都是 @racket[pagenode?] ，并且每个元素在 @racket[_possible-pagetree] 中都是唯一的（不包括根节点）。
 
 @examples[#:eval my-eval
 (pagetree? '(root index.html))
@@ -260,7 +259,7 @@ Test whether @racket[_possible-pagetree] is a valid pagetree. It must be a @rack
 (validate-pagetree
 [possible-pagetree any/c])
 pagetree?]
-Like @racket[pagetree?], but raises a descriptive error if @racket[_possible-pagetree] is invalid, and otherwise returns @racket[_possible-pagetree] itself.
+与 @racket[pagetree?] 类似，但如果 @racket[_possible-pagetree] 无效，则会引发一个描述性错误，否则会返回 @racket[_possible-pagetree] 本身。
 
 @examples[#:eval my-eval
 (validate-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -273,9 +272,9 @@ Like @racket[pagetree?], but raises a descriptive error if @racket[_possible-pag
 (pagenode?
 [possible-pagenode any/c])
 boolean?]
-Test whether @racket[_possible-pagenode] is a valid pagenode. A pagenode can be any @racket[symbol?] that is not whitespace. Every leaf of a pagetree is a pagenode. In practice, your pagenodes will likely be names of output files. 
+测试 @racket[_possible-pagenode] 是否是一个有效的页面节点。 pagenode 可以是任何不是空格的 @racket[symbol?] 。页面树的每一片叶子都是一个页面节点。实际上，您的页面节点可能是输出文件的名称。
 
-@margin-note{Pagenodes are symbols (rather than strings) so that pagetrees will be valid tagged X-expressions, which is a more convenient format for validation & processing.}
+@margin-note{页面节点是符号（而不是字符串），因此页面树将是有效的标记 X 表达式，这是一种更方便的验证和处理格式。}
 
 @examples[#:eval my-eval
 (code:comment @#,t{Three symbols, the third one annoying but valid})
@@ -289,7 +288,7 @@ Test whether @racket[_possible-pagenode] is a valid pagenode. A pagenode can be 
 (pagenodeish?
 [v any/c])
 boolean?]
-Return @racket[#t] if @racket[_v] can be converted with @racket[->pagenode].
+如果 @racket[_v] 可以用 @racket[->pagenode] 转换，则返回 @racket[#t] 。
 
 @examples[#:eval my-eval
 (map pagenodeish? '(9.999 "index.html" |    |))
@@ -313,7 +312,7 @@ Convert @racket[_v] to a pagenode.
 
 
 @defparam[current-pagetree pagetree pagetree?]{
-A parameter that defines the default pagetree used by pagetree navigation functions (e.g., @racket[parent], @racket[children], et al.) if another is not explicitly specified. Initialized to @racket[#f].}
+如果未明确指定另一个参数，则定义页面树导航功能（例如， @racket[parent] 、 @racket[children] 等）使用的默认页面树的参数。初始化为 @racket[#f] 。}
 
 
 @defproc[
@@ -321,7 +320,7 @@ A parameter that defines the default pagetree used by pagetree navigation functi
 [p (or/c #f pagenodeish?)]
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f pagenode?)]
-Find the parent pagenode of @racket[_p] within @racket[_pagetree]. Return @racket[#f] if there isn't one, or if you reach the root of the pagetree.
+在 @racket[_pagetree] 中找到 @racket[_p] 的父页面节点。如果没有，或者到达页面树的根目录，则返回 @racket[#f] 。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -336,7 +335,7 @@ Find the parent pagenode of @racket[_p] within @racket[_pagetree]. Return @racke
 [p (or/c #f pagenodeish?)]
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f (listof pagenode?))]
-Find the child pagenodes of @racket[_p] within @racket[_pagetree]. Return @racket[#f] if there aren't any.
+在 @racket[_pagetree] 中找到 @racket[_p] 的子页面节点。如果没有，则返回 @racket[#f] 。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -352,7 +351,7 @@ Find the child pagenodes of @racket[_p] within @racket[_pagetree]. Return @racke
 [p (or/c #f pagenodeish?)]
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f (listof pagenode?))]
-Find the sibling pagenodes of @racket[_p] within @racket[_pagetree]. The result includes @racket[_p] itself. But the function will still return @racket[#f] if @racket[_pagetree] is @racket[#f].
+在 @racket[_pagetree] 中找到 @racket[_p] 的同级页面节点。结果包括 @racket[_p] 本身。但如果 @racket[_pagetree] 是 @racket[#f] ，该函数仍将返回 @racket[#f] 。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html)))
@@ -366,7 +365,7 @@ Find the sibling pagenodes of @racket[_p] within @racket[_pagetree]. The result 
 [p (or/c #f pagenodeish?)]
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f (listof pagenode?))]
-Like @racket[siblings], but the result does not include @racket[_p] itself.
+与 @racket[siblings] 类似，但结果不包括 @racket[_p] 本身。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html)))
@@ -390,7 +389,7 @@ Like @racket[siblings], but the result does not include @racket[_p] itself.
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f (listof pagenode?))]
 )]
-Return the pagenode immediately before @racket[_p]. For @racket[previous*], return all the pagenodes before @racket[_p], in sequence. In both cases, return @racket[#f] if there aren't any pagenodes. The root pagenode is ignored.
+在 @racket[_p] 之前返回页面节点。对于 @racket[previous*] ，依次返回 @racket[_p] 之前的所有页面节点。在这两种情况下，如果没有任何页面节点，则返回 @racket[#f] 。根页面节点被忽略。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -416,7 +415,7 @@ Return the pagenode immediately before @racket[_p]. For @racket[previous*], retu
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 (or/c #f (listof pagenode?))]
 )]
-Return the pagenode immediately after @racket[_p]. For @racket[next*], return all the pagenodes after @racket[_p], in sequence. In both cases, return @racket[#f] if there aren't any pagenodes. The root pagenode is ignored.
+在 @racket[_p] 之后立即返回页面节点。对于 @racket[next*] ，依次返回 @racket[_p] 之后的所有页面节点。在这两种情况下，如果没有任何页面节点，则返回 @racket[#f] 。根页面节点被忽略。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -436,7 +435,7 @@ Return the pagenode immediately after @racket[_p]. For @racket[next*], return al
 [pagetree-source (or/c pagetree? pathish?)])
 pagetree?
 ]
-Get a pagetree from a @ext[pollen-pagetree-source-ext] source file, namely @racket[_pagetree-source]. If @racket[_pagetree-source] is already a pagetree, just pass it through.
+从 @ext[pollen-pagetree-source-ext] 源文件中获取一个pagetree，即 @racket[_pagetree-source] 。如果 @racket[_pagetree-source] 已经是一个页面树，只需将其传递出去即可。
 
 
 @defproc[
@@ -444,7 +443,7 @@ Get a pagetree from a @ext[pollen-pagetree-source-ext] source file, namely @rack
 [pagetree (or/c pagetree? pathish?)])
 list?
 ]
-Convert @racket[_pagetree] to a simple list. Uses @racket[flatten], and is thus equivalent to a pre-order depth-first traversal of @racket[_pagetree].
+将 @racket[_pagetree] 转换为一个简单的列表。因为使用 @racket[flatten] ，所以等价于对 @racket[_pagetree] 的进行预排序深度优先遍历。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -458,7 +457,7 @@ Convert @racket[_pagetree] to a simple list. Uses @racket[flatten], and is thus 
 [pagetree (or/c pagetree? pathish?) (current-pagetree)])
 boolean?
 ]
-Report whether @racket[_pagenode] is in @racket[_pagetree].
+报告 @racket[_pagenode] 是否在 @racket[_pagetree] 中。
 
 @examples[#:eval my-eval
 (current-pagetree '(root (mama.html son.html daughter.html) uncle.html))
@@ -473,4 +472,4 @@ Report whether @racket[_pagenode] is in @racket[_pagetree].
 [starting-path pathish? (current-project-root)])
 pagenode?
 ]
-Convert path @racket[_p] to a pagenode — meaning, make it relative to @racket[_starting-path], run it through @racket[->output-path], and convert it to a symbol. Does not tell you whether the resulting pagenode actually exists in the current pagetree (for that, use @racket[in-pagetree?]).
+将路径 @racket[_p] 转换为页面节点——意思是，使其相对于 @racket[_starting-path] ，通过 @racket[->output-path] 运行，并将其转换为符号。不会告诉您生成的页面节点是否实际存在于当前页面树中（想要达到这个目的，请使用 @racket[in-pagetree?] ）。

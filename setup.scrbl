@@ -28,31 +28,31 @@
 
 @section[#:tag "setup-overrides"]{How to override setup values}
 
-The values below can be changed by overriding them in your @racket["pollen.rkt"] source file:
+可以通过在 @racket[“poly.rkt”] 源文件中重写以下值来更改这些值：
 
 @itemlist[#:style 'ordered
 
-@item{Within this file, @seclink["submodules" #:doc '(lib "scribblings/guide/guide.scrbl")]{create a submodule} called @racket[setup].}
+@item{在这个文件中，@seclink["submodules" #:doc '(lib "scribblings/guide/guide.scrbl")]{创建一个名为 @racket[setup] 的子模块}。}
 
-@item{Within this submodule, use @racket[define] to make a variable with the same name as the one in @racket[pollen/setup], but without the @racket[setup:] prefix.}
+@item{在这个子模块中，使用 @racket[define] 来创建一个与 @racket[pollen/setup] 中的变量同名但没有 @racket[setup:] 前缀的变量。}
 
-@item{Assign it whatever value you like.}
+@item{给它分配你喜欢的任何值。}
 
-@item{Repeat as needed.}
+@item{根据需要重复。}
 
-@item{(Don't forget to @racket[provide] the variables from within your @racket[setup] submodule.)}
+@item{(别忘了 @racket[provide] @racket[setup] 子模块中的变量。)}
 
  ]
 
-When Pollen runs, these definitions will supersede those in @racketmodname[pollen/setup].
+当 Pollen 运行时，这些定义将取代 @racketmodname[pollen/setup] 中的定义。
 
-For instance, suppose you wanted the main export of every Pollen source file to be called @racket[van-halen] rather than @racket[doc], the extension of Pollen markup files to be @racket[.rock] rather than @racket[.pm], and the command character to be @litchar{🎸} instead of @litchar{◊}. Your @racket["pollen.rkt"] would look like this:
+例如，假设您希望将每个 Pollen 源文件的主要导出称为 @racket[van-halen] 而不是 @racket[doc]， Pollen 标记文件的扩展名是 @racket[.rock] 而不是 @racket[.pm]，命令字符是 @litchar{🎸} 而不是 @litchar{◊} 。你的 @racket["pollen.rkt"] 会看起来像这样：
 
 @fileblock["pollen.rkt" 
 @codeblock{
 #lang racket/base
 
-;; ... the usual definitions and tag functions ...
+;; ...通常的定义和标签函数...
 
 (module setup racket/base
   (provide (all-defined-out))
@@ -61,32 +61,32 @@ For instance, suppose you wanted the main export of every Pollen source file to 
   (define command-char #\🎸))
 }]
 
-Of course, you can restore the defaults simply by removing these defined values from @racket["pollen.rkt"].
+当然，您可以通过从 @racket["pollen.rkt"] 中删除这些定义的值来恢复默认值。
 
-Every @racket[setup:]@racket[_name] function will resolve the current value of that variable: it will return the value from the @racket[setup] submodule (if @racket[_name] was defined there), otherwise it will return the default value (which is directly available from @racket[default-]@racket[_name]). For instance, @racket[default-command-char] will always be @litchar{◊}, but in the example above, @racket[(setup:command-char)] would return @litchar{🎸}. 
+每个@racket[setup:]@racket[_name] 函数都会解析该变量的当前值：它将从 @racket[setup] 子模块返回值（如果此处定义了 @racket[_name] ），否则它将返回默认值（可直接从@racket[default-]@racket[_name] 中获得）。例如， @racket[default-command-char] 将始终为 @litchar{◊} ，但在上面的示例中， @racket[(setup:command-char)] 将返回 @litchar{🎸} 。
 
 @section{Values}
 
 @defoverridable[project-server-port integer?]{
-Determines the default HTTP port for the project server.}
+确定项目服务器的默认 HTTP 端口。}
 
 
 
-@defoverridable[main-pagetree string?]{Pagetree that Pollen dashboard loads by default in each directory.}
+@defoverridable[main-pagetree string?]{Pollen 仪表板在每个目录中默认加载的页面树。}
 
 
 
-@defoverridable[main-root-node symbol?]{Name of the root node in a decoded @racket[doc].}
+@defoverridable[main-root-node symbol?]{解码后的 @racket[doc] 中根节点的名称。}
 
-@defoverridable[block-tags (listof symbol?)]{Tags that are treated as blocks by @racket[block-txexpr?]. Initialized to the @link["https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements"]{block-level elements in HTML5}, namely:
+@defoverridable[block-tags (listof symbol?)]{被 @racket[block-txexpr?] 视为块的标签。初始化为@link["https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements"]{HTML5中的块级元素}，即：
 
 @racketidfont{@(string-join (map symbol->string (cdr default-block-tags)) " ")}
 
-... plus @racket[setup:main-root-node].}
+... 拓展 @racket[setup:main-root-node].}
 
 
 
-@defoverridable[command-char char?]{The magic character that indicates a Pollen command, function, or variable.}
+@defoverridable[command-char char?]{表示 Pollen 命令、函数或变量的魔法字符。}
 
 
 @deftogether[(
@@ -94,18 +94,18 @@ Determines the default HTTP port for the project server.}
 @(defoverridable linebreak-separator string?)
 @(defoverridable paragraph-separator string?)
 )]    
-Default separators used in decoding.
+解码中使用的默认分隔符。
 
 
-@defoverridable[render-cache-active boolean?]{Whether the render cache, which speeds up interactive sessions by reusing rendered versions of Pollen output files, is active.}
+@defoverridable[render-cache-active boolean?]{通过重用 Pollen 输出文件的渲染版本来加速交互会话的渲染缓存是否处于活动状态。}
 
-@defoverridable[compile-cache-active boolean?]{Whether the compile cache, which speeds up interactive sessions by saving compiled versions of Pollen source files, is active.}
+@defoverridable[compile-cache-active boolean?]{通过保存 Pollen 源文件的编译版本来加速交互会话的编译缓存是否处于活动状态。}
 
-@defoverridable[compile-cache-max-size exact-positive-integer?]{Maximum size of the compile cache.}
+@defoverridable[compile-cache-max-size exact-positive-integer?]{编译缓存的最大大小。}
 
-@defoverridable[cache-watchlist (listof (or/c path? path-string?))]{List of extra files that the cache (= render cache + compile cache, collectively) watches during a project-server session. If one of the files on the watchlist changes, the cache is invalidated (just as it would be if @racket["pollen.rkt"] changed).
+@defoverridable[cache-watchlist (listof (or/c path?path-string?))]{缓存（= 渲染缓存 + 编译缓存，统称）在项目服务器会话期间监视的额外文件列表。如果监视列表中的文件之一发生更改，则缓存无效（就像 @racket["pollen.rkt"] 更改时一样）。
 
-If the cache can't find a certain file on the watchlist, no error will arise. The file will simply be ignored. Therefore, to avoid unexpected behavior, the best policy is to use complete paths (or path strings). One way to generate a complete path to a local file is with @racket[define-runtime-path]. Another way, if you're using a module that's already installed as part of a package, is with @racket[resolve-module-path]:
+如果缓存在监视列表中找不到某个文件，则不会出现错误。该文件将被忽略。因此，为避免意外行为，最好的策略是使用完整路径（或路径字符串）。生成本地文件完整路径的一种方法是使用 @racket[define-runtime-path] 。另一种方法是，如果您正在使用已作为包的一部分安装的模块，则使用 @racket[resolve-module-path]：
 
 @fileblock["pollen.rkt" 
 @codeblock{
@@ -120,64 +120,64 @@ If the cache can't find a certain file on the watchlist, no error will arise. Th
 @history[#:added "1.4"]
 }
 
-@defoverridable[envvar-watchlist (listof string?)]{List of extra environment variables that are used in cache keys. Separate caches will be maintained for each distinct value of an environment variable. @secref["The_POLLEN_environment_variable"] is always used, regardless of how this value is set.
+@defoverridable[envvar-watchlist (listof string?)]{缓存键中使用的额外环境变量列表。将为环境变量的每个不同值维护单独的缓存。 @secref["The_POLLEN_environment_variable"] 总是被使用，不管这个值是如何设置的。
 
-Both the names and the values of environment variables are case-insensitive, so @racket["PUB"] and @racket["pub"] and @racket["pUb"] are all treated the same.
+环境变量的名称和值都不区分大小写，因此 @racket["PUB"] 和 @racket["pub"] 和 @racket["pUb"] 都被视为相同的变量。
 
 @history[#:added "2.1"]}
 
 
 
-@defoverridable[publish-directory (or/c path-string? path-for-some-system?)]{Default target for @secref{raco_pollen_publish}. A complete path is used as is; a relative path is published to the desktop.. @history[#:added "1.1"]}
+@defoverridable[publish-directory (or/c path-string? path-for-some-system?)]{@secref{raco_pollen_publish} 的默认目标。按原样使用完整路径；将相对路径发布到桌面.. @history[#:added "1.1"]}
 
-@defoverridable[unpublished-path? (path? . -> . boolean?)]{@history[#:changed "1.1" @elem{Deprecated. Please use @racket[setup:omitted-path?].}]}
+@defoverridable[unpublished-path? (path? . -> . boolean?)]{@history[#:changed "1.1" @elem{已弃用。请使用 @racket[setup:omitted-path?].}]}
 
 
-@defoverridable[omitted-path? (path? . -> . boolean?)]{Predicate that determines whether a path is omitted from @secref{raco_pollen_render} and @secref{raco_pollen_publish} operations. If the predicate evaluated to @racket[#t], then the path is omitted. 
-
-@history[#:added "1.1"]}
-
-@defoverridable[extra-published-path? (path? . -> . boolean?)]{@history[#:changed "1.1" @elem{Deprecated. Please use @racket[setup:extra-path?].}]}
-
-@defoverridable[extra-path? (path? . -> . boolean?)]{Predicate that determines if path is rendered & published, overriding @racket[(setup:omitted-path?)] above, and Pollen's default publish settings. For instance, Pollen automatically omits files with a @racket[.rkt] extension. If you wanted to force a @racket[.rkt] file to be published, you could include it here.
+@defoverridable[omitted-path? (path? . -> . boolean?)]{确定是否从 @secref{raco_pollen_render} 和 @secref{raco_pollen_publish} 操作中省略路径的谓词。如果谓词的计算结果为 @racket[#t] ，则省略路径。
 
 @history[#:added "1.1"]}
 
+@defoverridable[extra-published-path? (path? . -> . boolean?)]{@history[#:changed "1.1" @elem{已弃用。请使用 @racket[setup:extra-path?].}]}
 
-@defoverridable[poly-targets (listof symbol?)]{List of symbols that denotes the possible targets of a @racket['poly] source file.}
+@defoverridable[extra-path? (path? . -> . boolean?)]{确定路径是否被渲染和发布的谓词，覆盖上面的 @racket[(setup:omimitted-path?)] 和 Pollen 的默认发布设置。例如，Pollen 会自动忽略扩展名为 @racket[.rkt] 的文件。如果您想强制发布 @racket[.rkt] 文件，您可以在此处包含它。
+
+@history[#:added "1.1"]}
 
 
-@defoverridable[index-pages (listof string?)]{List of strings that the project server will use as directory default pages, in order of priority. Has no effect on command-line rendering operations. Also has no effect on your live web server (usually  that's a setting you need to make in an @tt{.htaccess} configuration file).} But with this setting, you can simulate the behavior of your live server, so that internal index-page URLs work correctly.
+@defoverridable[poly-targets (listof symbol?)]{表示 @racket['poly] 源文件的可能目标的符号列表。}
 
- @defoverridable[trim-whitespace? boolean?]{Predicate that controls whether the Pollen source reader trims whitespace from the beginning of a @racket[doc] export. You might set this to @racket[#false] if you're using Pollen as a preprocessor for another programming language and you want to preserve leading whitespace accurately.
+
+@defoverridable[index-pages (listof string?)]{项目服务器将用作目录默认页面的字符串列表，按优先级排序。对命令行渲染操作没有影响。对您的实时 Web 服务器也没有影响（通常这是您需要在 @tt{.htaccess} 配置文件中进行的设置）。} 但是使用此设置，您可以模拟实时服务器的行为，以便内部 index-page URL 工作正常。
+
+ @defoverridable[trim-whitespace? boolean?]{控制 Pollen 源阅读器是否从 @racket[doc] 导出的开头修剪空白的谓词。如果您将 Pollen 用作另一种编程语言的预处理器并且想要准确地保留前导空格，则可以将其设置为 @racket[#false]。
 
  @history[#:added "1.5"]}
 
-@defoverridable[allow-unbound-ids? boolean?]{Predicate that controls whether Pollen converts unbound identifiers into default tags by altering the behavior of @racket[#%top] in @racketmodname[pollen/top].
+@defoverridable[allow-unbound-ids? boolean?]{通过改变 @racketmodname[pollen/top] 中 @racket[#%top] 的行为来控制Pollen 是否将未绑定标识符转换为默认标签的谓词。
 
 @history[#:added "2.0"]}
 
-@defoverridable[external-renderer (or/c (list/c module-path? symbol?) #f)]{A module path and identifier (suitable for use with @racket[dynamic-require]) that provide a function for Pollen to call instead of @racket[render] when rendering files needed by the @seclink["Using_the_project_server"]{project server} or when running @secref["raco_pollen_render"]. The function must accept the same arguments as @racket[render-to-file] and should return the final output as a @tech[#:doc '(lib "scribblings/reference/reference.scrbl")]{string} or @tech[#:doc '(lib "scribblings/reference/reference.scrbl")]{byte string}. Pollen will always write this return value out to the output file for you.
+@defoverridable[external-renderer (or/c (list/c module-path? symbol?) #f)]{一个模块路径和标识符（适合与 @racket[dynamic-require] 一起使用），提供一个函数供 Pollen 在渲染 @seclink["Using_the_project_server"]{project server} 所需的文件时调用而不是 @racket[render] 或者在运行 @secref["raco_pollen_render"] 时。该函数必须接受与 @racket[render-to-file] 相同的参数，并且应该以 @tech[#:doc '(lib "scribblings/reference/reference.scrbl")]{string} 或 @tech[#:doc '(lib "scribblings/reference/reference.scrbl")]{byte string} 的形式返回最终输出。 Pollen 将始终为您将此返回值写入输出文件。
 
-Setting this value gives you full control over (and responsibility for) how Pollen converts the compiled @racketidfont{doc} and @racketidfont{metas} from source files into their final output. Your renderer should be able to handle any of Pollen’s @seclink["Source_formats"]{source formats} or @seclink["Utility_formats"]{utility formats}. The operation of Pollen’s @racket[render] function is not affected by setting this value, so your renderer can use it as a fallback.
+设置此值使您可以完全控制（并负责）Pollen 如何将编译的 @racketidfont{doc} 和 @racketidfont{metas} 从源文件转换为最终输出。您的渲染器应该能够处理 Pollen 的任何 @seclink["Source_formats"]{source formats} 或 @seclink["Utility_formats"]{utility formats}。 Pollen 的 @racket[render] 函数的操作不受设置此值的影响，因此您的渲染器可以将其用作后备。
 
  @history[#:added "3.2"]}
   
 @section{Parameters}
 
-I mean @italic{parameters} in the Racket sense, i.e. values that can be fed to @racket[parameterize]. 
+我的意思是 Racket 意义上的 @italic{parameters} ，即可以提供给 @racket[parameterize] 的值。
 
 @defparam[current-server-port port integer? #:value default-project-server-port]{
-A parameter that sets the HTTP port for the project server.}
+设置项目服务器的 HTTP 端口的参数。}
 
 
 @defparam[current-project-root path path?]{
-A parameter that holds the root directory of the current project (e.g., the directory where you launched @code{raco pollen start}).}
+保存当前项目根目录的参数（例如，您启动 @code{raco pollen start} 的目录）。}
 
 
 @defparam[current-server-extras-path dir path? #:value #f]{
-A parameter that reports the path to the directory of support files for the project server.}
+报告项目服务器支持文件目录路径的参数。}
 
 @defparam[current-poly-target target symbol? #:value 'html]{
-A parameter that reports the current rendering target for @racket[poly] source files.}
+报告 @racket[poly] 源文件的当前渲染目标的参数。}
 

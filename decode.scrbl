@@ -10,15 +10,15 @@
 
 @defmodule[pollen/decode]
 
-The @racket[doc] export of a Pollen markup file is a simple X-expression. @italic{Decoding} refers to any post-processing of this X-expression. The @racket[pollen/decode] module provides tools for creating decoders.
+ Pollen 标记文件的 @racket[doc] 输出是一个简单的 X-表达式。 @italic{Decoding} 指的是对这个 X 表达式的任何后处理。@racket[pollen/decode] 模块提供了创建解码器的工具。
 
-The decode step can happen separately from the compilation of the file. But you can also attach a decoder to the markup file's @racket[root] node, so the decoding happens automatically when the markup is compiled, and thus automatically incorporated into @racket[doc]. (Following this approach, you could also attach multiple decoders to different tags within @racket[doc].)
+解码步骤可以与文件的编译分开进行。但是您也可以将解码器附加到标记文件的@racket[root] 节点，因此在编译标记时会自动进行解码，从而自动合并到@racket[doc] 中。 （按照这种方法，您还可以将多个解码器附加到 @racket[doc] 中的不同标签。）
 
-You can, of course, embed function calls within Pollen markup. But since markup is optimized for authors, decoding is useful for operations that can or should be moved out of the authoring layer. 
+当然，您可以在 Pollen 标记中嵌入函数调用。但是由于标记针对作者进行了优化，因此解码对于可以或应该移出创作层的操作是很有用的。
 
-One example is presentation and layout. For instance, @racket[decode-paragraphs] is a decoder function that lets authors mark paragraphs in their source simply by using two carriage returns. 
+一个例子是演示和布局。例如， @racket[decode-paragraphs] 是一个解码器函数，可以让作者在他们的源代码中简单地使用两个回车键来标记段落。
 
-Another example is conversion of output into a particular data format. Most Pollen functions are optimized for HTML output, but one could write a decoder that targets another format.
+另一个例子是将输出转换为一种特定的数据格式。大多数 Pollen 函数都针对 HTML 输出进行了优化，但人们可以编写一个针对其他格式的解码器。
 
 
 
@@ -38,26 +38,26 @@ Another example is conversion of output into a particular data format. Most Poll
 [#:exclude-attrs attrs-to-exclude txexpr-attrs? null]
 )
 (or/c xexpr/c (listof xexpr/c))]
-Recursively process a @racket[_tagged-xexpr], usually the one exported from a Pollen source file as @racket[doc]. 
+递归处理的 @racket[_tagged-xexpr] ，通常是从 Pollen 源文件导出的 @racket[doc] 。
 
-This function doesn't do much on its own. Rather, it provides the hooks upon which harder-working functions can be hung. 
+这个函数本身并没有做太多的事情。相反，它提供了可以可以挂上更多的工作函数的钩子。
 
-Recall that in Pollen, all @secref["tags-are-functions"]. By default, the @racket[_tagged-xexpr] from a source file is tagged with @racket[root]. So the typical way to use @racket[decode] is to attach your decoding functions to it, and then define @racket[root] to invoke your @racket[decode] function. Then it will be automatically applied to every @racket[doc] during compile. 
+回顾一下，在 Pollen 中，所有的 @secref["tag-are-functions"] 。默认情况下，来自源文件的 @racket[_tagged-xexpr] 被标记为 @racket[root] 。所以使用 @racket[decode] 的典型方法是将你的解码函数附加到它上面，然后定义 @racket[root] 来调用你的 @racket[decode] 函数。然后在编译过程中，它将自动应用于每一个 @racket[doc] 。
 
-@margin-note{@link["https://docs.racket-lang.org/pollen-tfl/_pollen_rkt_.html#%28def._%28%28lib._pollen-tfl%2Fpollen..rkt%29._root%29%29"]{Here's an example} of invoking @racket[decode] via the @racket[root] tag. That example is part of the @racket[pollen-tfl] sample project, which you can install & study separately.}
+@margin-note{@link["https://docs.racket-lang.org/pollen-tfl/_pollen_rkt_.html#%28def._%28%28lib._pollen-tfl%2Fpollen..rkt%29._root%29%29"]{这里有一个通过 @racket[root] 标签调用 @racket[decode] 的例子}。这个例子是 @racket[pollen-tfl] 样本项目的一部分，你可以单独安装和研究。}
 
-This illustrates another important point: even though @racket[decode] presents an imposing list of arguments, you're unlikely to use all of them at once. These represent possibilities, not requirements. For instance, let's see what happens when @racket[decode] is invoked without any of its optional arguments.
+这说明了另一个重要点：即使 @racket[decode] 提供了一个强大的参数列表，您也不太可能一次使用所有这些参数。这些代表可能性，而不是要求。例如，让我们看看在没有任何可选参数的情况下调用 @racket[decode] 会发生什么。
 
 @examples[#:eval my-eval
 (define tx '(root "I wonder" (em "why") "this works."))
 (decode tx)
 ]
 
-Right — nothing. That's because the default value for the decoding arguments is the identity function, @racket[(λ (x)x)]. So all the input gets passed through intact unless another action is specified.
+对--什么都没有。这是因为解码参数的默认值是身份函数，@racket[(λ (x)x)]。所以所有的输入都会被完整地传递过去，除非指定了另一个操作。
 
-The @racket[_*-proc] arguments of @racket[decode] take procedures that are applied to specific categories of elements within @racket[_txexpr].
+@racket[decode] 的@racket[_*-proc] 参数采用适用于@racket[_txexpr] 中特定类别元素的过程。
 
-The @racket[_txexpr-tag-proc] argument is a procedure that handles X-expression tags.
+@racket[_txexpr-tag-proc]参数是一个处理 X-表达式标签的过程。
 
 @examples[#:eval my-eval
 (define tx '(p "I'm from a strange" (strong "namespace")))
@@ -65,7 +65,7 @@ The @racket[_txexpr-tag-proc] argument is a procedure that handles X-expression 
 (decode tx #:txexpr-tag-proc (λ (t) (string->symbol (format "ns:~a" t))))
 ]
 
-The @racket[_txexpr-attrs-proc] argument is a procedure that handles lists of X-expression attributes. (The @racketmodname[txexpr] module, included at no extra charge with Pollen, includes useful helper functions for dealing with these attribute lists.)
+@racket[_txexpr-attrs-proc] 参数是一个处理 X 表达式属性列表的过程。 （@racketmodname[txexpr] 模块免费包含在 Pollen 中，包括用于处理这些属性列表的有用帮助函数。）
 
 @examples[#:eval my-eval
 (define tx '(p ((id "first")) "If I only had a brain."))
@@ -73,7 +73,7 @@ The @racket[_txexpr-attrs-proc] argument is a procedure that handles lists of X-
 (decode tx #:txexpr-attrs-proc (λ (attrs) (cons '[class "PhD"] attrs )))
 ]
 
-Note that @racket[_txexpr-attrs-proc] will change the attributes of every tagged X-expression, even those that don't have attributes. This is useful, because sometimes you want to add attributes where none existed before. But be careful, because the behavior may make your processing function overinclusive.
+请注意，@racket[_txexpr-attrs-proc] 将更改每个标记的 X 表达式的属性，即使是那些没有属性的。这很有用，因为有时您想添加以前不存在的属性。但要小心，因为该行为可能会使您的处理函数过度包容。
 
 @examples[#:eval my-eval
 (define tx '(div (p ((id "first")) "If I only had a brain.") 
@@ -86,7 +86,7 @@ Note that @racket[_txexpr-attrs-proc] will change the attributes of every tagged
 ]
 
 
-The @racket[_txexpr-elements-proc] argument is a procedure that operates on the list of elements that represents the content of each tagged X-expression. Note that each element of an X-expression is subject to two passes through the decoder: once now, as a member of the list of elements, and also later, through its type-specific decoder (i.e., @racket[_string-proc], @racket[_entity-proc], and so on).
+@racket[_txexpr-elements-proc] 参数是一个对元素列表进行操作的过程，该列表表示每个标记的 X 表达式的内容。请注意，X 表达式的每个元素都要经过两次解码器：一次是现在，作为元素列表的成员，另一次是以后，通过其特定类型的解码器（即 @racket[_string-proc] , @racket[_entity-proc] ，等等）。
 
 @examples[#:eval my-eval
 (define tx '(div "Double" "\n" "toil" amp "trouble")) 
@@ -97,7 +97,7 @@ The @racket[_txexpr-elements-proc] argument is a procedure that operates on the 
 #:string-proc (λ (s) (string-upcase s)))
 ]
 
-So why do you need @racket[_txexpr-elements-proc]? Because some types of element decoding depend on context, thus it's necessary to handle the elements as a group. For instance, paragraph decoding. The behavior is not merely a @racket[map] across each element, because elements are being removed and altered contextually:
+那么为什么需要 @racket[_txexpr-elements-proc] ？因为有些类型的元素解码取决于上下文，因此有必要将元素作为一个组来处理。例如，段落解码。这种行为不仅仅是跨越每个元素的 @racket[map] ，因为元素正在被删除并根据上下文进行更改：
 
 @examples[#:eval my-eval
 (define (paras tx) (decode tx #:txexpr-elements-proc decode-paragraphs))
@@ -110,7 +110,7 @@ So why do you need @racket[_txexpr-elements-proc]? Because some types of element
 ]
 
 
-The @racket[_txexpr-proc], @racket[_block-txexpr-proc], and @racket[_inline-txexpr-proc] arguments are procedures that operate on tagged X-expressions. If the X-expression meets the @racket[block-txexpr?] test, it's processed by @racket[_block-txexpr-proc]. Otherwise, it's inline, so it's processed by @racket[_inline-txexpr-proc]. (Careful, however — these aren't mutually exclusive, because @racket[_block-txexpr-proc] operates on all the elements of a block, including other tagged X-expressions within.) Then both categories are processed by @racket[_txexpr-proc]. 
+@racket[_txexpr-proc], @racket[_block-txexpr-proc] , 和 @racket[_inline-txexpr-proc] 参数是对标记的 X 表达式进行操作的过程。如果 X 表达式满足 @racket[block-txexpr?] 测试，它将被 @racket[_block-txexpr-proc] 处理。否则，它是内联的，所以它被 @racket[_inline-txexpr-proc] 处理。(但是要注意--这些并不是相互排斥的，因为 @racket[_block-txexpr-proc] 对一个块的所有元素进行操作，包括其中的其他标记的 X 表达式)。然后两个类别都由 @racket[_txexpr-proc] 来处理。
 
 @examples[#:eval my-eval
 (define tx '(div "Please" (em "mind the gap") (h1 "Tuesdays only"))) 
@@ -128,7 +128,7 @@ The @racket[_txexpr-proc], @racket[_block-txexpr-proc], and @racket[_inline-txex
 (decode tx #:txexpr-proc add-ns)
 ]
 
-The @racket[_string-proc], @racket[_entity-proc], and @racket[_cdata-proc] arguments are procedures that operate on X-expressions that are strings, entities, and CDATA, respectively. Deliberately, the output contracts for these procedures accept any kind of X-expression (meaning, the procedure can change the X-expression type).
+@racket[_string-proc], @racket[_entity-proc] , 和 @racket[_cdata-proc] 参数是分别对字符串、实体和 CDATA 的 X 表达式的操作过程。有意的，这些程序的输出合约接受任何种类的 X-表达式（意味着，程序可以改变 X-表达式的类型）。
 
 @examples[#:eval my-eval
 (code:comment @#,t{A div with string, entity, and cdata elements})
@@ -140,7 +140,7 @@ The @racket[_string-proc], @racket[_entity-proc], and @racket[_cdata-proc] argum
 (print (decode tx #:cdata-proc rulify))
 ] 
 
-Note that entities come in two flavors — symbolic and numeric — and @racket[_entity-proc] affects both. If you only want to affect one or the other, you can add a test within @racket[_entity-proc]. Symbolic entities can be decodeed with @racket[symbol?], and numeric entities with @racket[valid-char?]:
+注意，实体有两种类型--符号型和数字型--而 @racket[_entity-proc] 对这两种类型都有影响。如果你只想影响其中之一，你可以在 @racket[_entity-proc] 中添加一个测试。符号实体可以用 @racket[symbol?] 解码，数字实体可以用 @racket[valid-char?] 解码：
 
 @examples[#:eval my-eval
 (define tx `(div amp 62))
@@ -150,9 +150,9 @@ Note that entities come in two flavors — symbolic and numeric — and @racket
 (print (decode tx #:entity-proc numeric-detonate))
 ] 
 
-The five previous procedures — @racket[_block-txexpr-proc], @racket[_inline-txexpr-proc], @racket[_string-proc], @racket[_entity-proc], and @racket[_cdata-proc] — can return either a single X-expression, or a list of X-expressions, which will be spliced into the parent at the same point.
+之前的五个过程-- @racket[_block-txexpr-proc] , @racket[_inline-txexpr-proc] , @racket[_string-proc] , @racket[_entity-proc] , 和 @racket[_cdata-proc] --可以返回一个单一的 X 表达式，或者一个 X 表达式的列表，它们将在同一个点被拼接到父级。
 
-For instance, earlier we saw how to double elements by using @racket[_txexpr-elements-proc]. But you can accomplish the same thing on a case-by-case basis by returning a list of values:
+例如，前面我们看到了如何使用 @racket[_txexpr-elements-proc] 将元素加倍。但您可以通过返回一系列值来逐个完成相同的工作：
 
 @examples[#:eval my-eval
 (code:comment @#,t{A div with string, entity, and inline-txexpr elements})
@@ -164,7 +164,7 @@ For instance, earlier we saw how to double elements by using @racket[_txexpr-ele
 (print (decode tx #:inline-txexpr-proc doubler))
 ] 
 
-Caution: when returning list values, it's possible to trip over the unavoidable ambiguity between a @racket[txexpr?] and a list of @racket[xexpr?]s that happens to begin with a symbolic entity: 
+注意：当返回列表值时，可能会在 @racket[txexpr?] 和恰好以符号实体开头的 @racket[xexpr?] 列表之间出现不可避免的歧义：
 
 @examples[#:eval my-eval
 (code:comment @#,t{An ambiguous expression})
@@ -181,7 +181,7 @@ but return value will be treated as tagged X-expression})
 (decode x #:string-proc rockit2)
 ] 
 
-The @racket[_tags-to-exclude] argument is a list of tags that will be exempted from decoding. Though you could get the same result by testing the input within the individual decoding functions, that's tedious and potentially slower.
+@racket[_tags-to-exclude]参数是一个可以免于解码的标记列表。虽然您可以通过在各个解码函数中测试输入来获得相同的结果，但这很乏味，而且可能会很慢。
 
 @examples[#:eval my-eval
 (define tx '(p "I really think" (em "italics") "should be lowercase."))
@@ -189,7 +189,7 @@ The @racket[_tags-to-exclude] argument is a list of tags that will be exempted f
 (decode tx #:string-proc string-upcase #:exclude-tags '(em))
 ]
 
-The @racket[_tags-to-exclude] argument is useful if you're decoding source that's destined to become HTML. According to the HTML spec, material within a @racket[<style>] or @racket[<script>] block needs to be preserved literally. In this example, if the CSS and JavaScript blocks are capitalized, they won't work. So exclude @racket['(style script)], and problem solved.
+如果你要对注定要成为 HTML 的源文件进行解码，那么 @racket[_tags-to-exclude] 参数就很有用。根据 HTML 规范， @racket[<style>] 或 @racket[<script>] 块内的材料需要保留字面意思。在这个例子中，如果 CSS 和 JavaScript 块被大写了，它们就不能工作。所以排除了@racket['(style script)]，问题就解决了。
 
 @examples[#:eval my-eval
 (define tx '(body (h1 ((class "Red")) "Let's visit Planet Telex.") 
@@ -199,7 +199,7 @@ The @racket[_tags-to-exclude] argument is useful if you're decoding source that'
 (decode tx #:string-proc string-upcase #:exclude-tags '(style script))
 ]
 
-Finally, the @racket[_attrs-to-exclude] argument works the same way as @racket[_tags-to-exclude], but instead of excluding an element based on its tag, it excludes based on whether the element has a matching attribute/value pair.
+最后， @racket[_attrs-to-exclude] 参数的工作方式与 @racket[_tags-to-exclude] 相同，但它不是基于标记排除元素，而是基于元素是否具有匹配的属性/值对进行排除。
 
 @examples[#:eval my-eval
 (define tx '(p (span "No attrs") (span ((id "foo")) "One attr")))
@@ -223,16 +223,16 @@ Finally, the @racket[_attrs-to-exclude] argument works the same way as @racket[_
 [#:exclude-attrs attrs-to-exclude txexpr-attrs? null]
 )
 (or/c xexpr/c (listof xexpr/c))]
-Identical to @racket[decode], but takes @racket[txexpr-elements?] as input rather than a whole tagged X-expression. A convenience variant for use inside tag functions.
+与 @racket[decode] 相同，但需要 @racket[txexpr-elements?] 作为输入，而不是整个标记的 X 表达式。一个方便的变体，在标签函数中使用。
 
 
 @defproc[
 (block-txexpr?
 [v any/c])
 boolean?]
-Predicate that tests whether @racket[_v] has a tag that is among the @racket[setup:block-tags]. If not, it is treated as inline.
+检验 @racket[_v] 是否有属于 @racket[setup:block-tags] 的标签的谓词。如果不是，它将被视为内联。
 
-This predicate affects the behavior of other functions. For instance, @racket[decode-paragraphs] knows that block elements in the markup shouldn't be wrapped in a @racket[p] tag. So if you introduce a new block element called @racket[bloq] without configuring it as a block, misbehavior will follow:
+该谓词影响其他函数的行为。例如，@racket[decode-paragraphs] 知道标记中的块元素不应该包含在 @racket[p] 标记中。因此，如果您引入一个名为 @racket[bloq] 的新块元素而不将其配置为块，则会出现错误行为：
 
 @examples[#:eval my-eval
 (define (paras tx) (decode tx #:txexpr-elements-proc decode-paragraphs))
@@ -240,7 +240,7 @@ This predicate affects the behavior of other functions. For instance, @racket[de
 (code:comment @#,t{Wrong: bloq should not be wrapped})
 ]
 
-To change how this test works, use a @racket[setup] submodule as described in @secref["setup-overrides"]:
+要改变这个测试的工作方式，请使用 @secref["setup-overrides"] 中描述的 @racket[setup] 子模块。
 
 @racketblock[
 (module setup racket/base
@@ -248,11 +248,11 @@ To change how this test works, use a @racket[setup] submodule as described in @s
   (require pollen/setup)
   (define block-tags (cons 'bloq default-block-tags)))]
 
-After that change, the result will be:
+更改后，结果将是：
 
 @racketresultfont{'(body (p "I want to be a paragraph.") (bloq "But not me."))}
 
-The default block tags are: 
+默认块标签是：
 
 @racketidfont{@(string-join (map symbol->string default-block-tags) " ")}
 
@@ -261,7 +261,7 @@ The default block tags are:
 (merge-newlines
 [elements (listof xexpr?)])
 (listof xexpr?)]
-Within @racket[_elements], merge sequential newline characters into a single element. The newline string is controlled by @racket[setup:newline], and defaults to @val[default-newline].
+在 @racket[_elements] 中，将连续的换行字符合并为一个元素。换行字符串由 @racket[setup:newline] 控制，并默认为 @val[default-newline] 。
 
 @examples[#:eval my-eval
 (merge-newlines '(p "\n" "\n" "foo" "\n" "\n\n" "bar" 
@@ -273,11 +273,11 @@ Within @racket[_elements], merge sequential newline characters into a single ele
 [elements (listof xexpr?)]
 [linebreaker (or/c #f xexpr? (xexpr? xexpr? . -> . (or/c #f xexpr?))) '(br)])
 (listof xexpr?)]
-Within @racket[_elements], convert occurrences of the linebreak separator to @racket[_linebreaker], but only if the separator does not occur between blocks (see @racket[block-txexpr?]). Why? Because block-level elements automatically display on a new line, so adding @racket[_linebreaker] would be superfluous. In that case, the linebreak separator just disappears.
+在@racket[_elements] 中，将出现的换行符分隔符转换为 @racket[_linebreaker] ，但前提是分隔符不在块之间出现（参见 @racket[block-txexpr?] ）。为什么？因为块级元素会自动显示在新行上，所以添加 @racket[_linebreaker] 将是多余的。在这种情况下，换行符就会消失。
 
-The linebreak separator is controlled by @racket[setup:linebreak-separator], and defaults to @val[default-linebreak-separator].
+换行符由@racket[setup:linebreak-separator] 控制，默认为 @val[default-linebreak-separator] 。
 
-The @racket[_linebreaker] argument can either be @racket[#f] (which will delete the linebreaks), an X-expression (which will replace the linebreaks), or a function that takes two X-expressions and returns one. This function will receive the previous and next elements, to make contextual substitution possible.
+@racket[_linebreaker] 参数可以是 @racket[#f] （将删除换行符）、X 表达式（将替换换行符）或接受两个 X 表达式并返回一个的函数。此函数将接收前一个和下一个元素，以使上下文替换成为可能。
 
 @examples[#:eval my-eval
 (decode-linebreaks '(div "Two items:" "\n" (em "Eggs") "\n" (em "Bacon")))
@@ -294,11 +294,11 @@ The @racket[_linebreaker] argument can either be @racket[#f] (which will delete 
 [#:linebreak-proc linebreak-proc (txexpr-elements? . -> . txexpr-elements?) decode-linebreaks]
 [#:force? force-paragraph? boolean? #f])
 txexpr-elements?]
-Find paragraphs within @racket[_elements] and wrap them with @racket[_paragraph-wrapper]. Also handle linebreaks using @racket[decode-linebreaks].
+在 @racket[_elements] 中寻找段落，并用 @racket[_paragraph-wrapper] 来包装它们。还可以使用 @racket[dele-lineebreaks] 来处理行距。
 
-What counts as a paragraph? Any @racket[_elements] that are either a) explicitly set apart with a paragraph separator, or b) adjacent to a @racket[block-txexpr?] (in which case the paragraph-ness is implied).
+什么算作一个段落？任何 @racket[_elements] ，要么 a)明确地用段落分隔符分开，要么 b)与 @racket[block-txexpr?] 相邻（在这种情况下，段落性是隐含的）。
 
-The paragraph separator is controlled by @racket[setup:paragraph-separator], and defaults to @val[default-paragraph-separator].
+段落分隔符由 @racket[setup:paragraph-separator] 控制，并默认为 @val[default-paragraph-separator] 。
 
 @examples[#:eval my-eval
 (decode-paragraphs '("Explicit para" "\n\n" "Explicit para"))
@@ -306,7 +306,7 @@ The paragraph separator is controlled by @racket[setup:paragraph-separator], and
 (decode-paragraphs '("Implied para" (div "Block") "Implied para"))
 ]
 
-If @racket[_element] is already a block, it will not be wrapped as a paragraph (because in that case, the wrapping would be superfluous). Thus, as a consequence, if @racket[_paragraph-sep] occurs between two blocks, it will be ignored (as in the example below using two sequential @racket[div] blocks.) Likewise, @racket[_paragraph-sep] will also be ignored if it occurs between a block and a non-block (because a paragraph break is already implied).
+如果 @racket[_element] 已经是一个块，它将不会被包装成一个段落（因为在这种情况下，包装将是多余的）。因此，如果 @racket[_paragraph-sep] 出现在两个块之间，它将被忽略（如下面的例子中使用两个连续的 @racket[div] 块）。
 
 @examples[#:eval my-eval
 (code:comment @#,t{The explicit "\n\n" makes no difference in these cases})
@@ -316,7 +316,7 @@ If @racket[_element] is already a block, it will not be wrapped as a paragraph (
 (decode-paragraphs '("Para" (div "Block")))
 ]
 
-The @racket[_paragraph-wrapper] argument can either be an X-expression, or a function that takes a list of elements and returns one tagged X-expressions. This function will receive the elements of the paragraph, to make contextual wrapping possible. 
+@racket[_paragraph-wrapper]参数可以是一个 X-表达式，也可以是一个函数，它接收一个元素列表并返回一个标记的 X-表达式。这个函数将接收段落的元素，以使上下文包装成为可能。
 
 @examples[#:eval my-eval
 (decode-paragraphs '("First para" "\n\n" "Second para") 'ns:p)
@@ -324,14 +324,14 @@ The @racket[_paragraph-wrapper] argument can either be an X-expression, or a fun
  (λ (elems) `(ns:p ,@elems "!?!")))
 ]
 
-The @racket[_linebreak-proc] argument allows you to use a different linebreaking procedure other than the usual @racket[decode-linebreaks].
+@racket[_linebreak-proc]参数允许你使用不同的断行程序，而不是通常的 @racket[decode-linebreaks] 。
 
 @examples[#:eval my-eval
 (decode-paragraphs '("First para" "\n\n" "Second para" "\n" "Second line")
 #:linebreak-proc (λ (x) (decode-linebreaks x '(newline))))
 ]
 
-The @racket[#:force?] option will wrap a paragraph tag around @racket[_elements], even if no explicit or implicit paragraph breaks are found. The @racket[#:force?] option is useful for when you want to guarantee that you always get a list of blocks.
+@racket[#:force?] 选项将在 @racket[_elements] 周围包裹一个段落标签，即使没有发现显性或隐性的段落分隔符。@racket[#:force?] 选项在你想保证总是得到一个块的列表时很有用。
 
 @examples[#:eval my-eval
 (decode-paragraphs '("This" (span "will not be") "a paragraph"))

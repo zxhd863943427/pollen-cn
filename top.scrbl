@@ -9,11 +9,11 @@
 
 @defmodule[pollen/top]
 
-You'll probably never invoke this module directly. But it's implicitly imported into every Pollen markup file. And if you don't know what it does, you might end up surprised by some of the behavior you get.
+你可能永远不会直接调用这个模块。但它被隐式导入到每个 Pollen 标记文件中。如果你不知道它的作用，你可能会对你得到的一些行为感到惊讶。
 
 @defform[(#%top . id)]{
 
-In standard Racket, @racket[#%top] is the function of last resort, called when @racket[_id] is not bound to any value. As such, it typically reports a syntax error.
+在标准 Racket 中，@racket[#%top] 是最后的函数，当@racket[_id] 未绑定到任何值时调用。因此，它通常会报告语法错误。
  
 @examples[
 (code:comment @#,t{Let's call em without defining it})
@@ -23,9 +23,9 @@ In standard Racket, @racket[#%top] is the function of last resort, called when @
 ((#%top . em) "Bonjour")
 ]
 
-In the Pollen markup environment, however, this behavior is annoying. Because when you're writing X-expressions, you don't necessarily want to define all your tags ahead of time. 
+然而，在 Pollen 标记环境中，这种行为很烦人。因为当您编写 X 表达式时，您不一定要提前定义所有标签。
 
-So Pollen redefines @racket[#%top]. For convenience, Pollen's version of @racket[#%top] assumes that an undefined tag should just refer to an X-expression beginning with that tag (and uses @racket[default-tag-function] to provide this behavior):
+所以 Pollen 重新定义了 @racket[#%top]。为方便起见，Pollen 的 @racket[#%top] 版本假定未定义的标签应该只引用以该标签开头的 X 表达式（并使用 @racket[default-tag-function] 来提供此行为）：
 
 @examples[
 (code:comment @#,t{Again, let's call em without defining it, but using pollen/top})
@@ -36,14 +36,14 @@ So Pollen redefines @racket[#%top]. For convenience, Pollen's version of @racket
 ((#%top . em) "Bonjour")
 ]
 
-The good news is that this behavior means you use any tag you want in your markup without defining it in advance. You can still attach a function to the tag later, which will automatically supersede @racket[#%top].
+好消息是，这种行为意味着您可以在标记中使用任何您想要的标签，而无需提前定义它。您仍然可以稍后将函数附加到标签，这将自动取代@racket[#%top]。
 
 @examples[
 (define (em x) `(span ((style "font-size:100px")) ,x))
 (em "Bonjour")
 ]
 
-The bad news is that you'll never get an ``unbound identifier'' error. These unbound identifiers will happily sail through and be converted to tags.
+坏消息是，您永远不会收到“（unbound identifier）未绑定标识符”错误。这些未绑定的标识符将愉快地通过编译并转换为标签。
 
 @examples[
 (require pollen/top)
@@ -52,33 +52,9 @@ The bad news is that you'll never get an ``unbound identifier'' error. These unb
 (erm "Bonjour")
 ]
 
-@margin-note{If you prefer the ordinary Racket-style behavior where unbound identifiers raise an error, define @racket[setup:allow-unbound-ids?] in your project to be @racket[#false].}
+@margin-note{如果您更喜欢普通的 Racket 式行为，其中未绑定的标识符会引发错误，请将您的项目中的 @racket[setup:allow-unbound-ids?] 定义为 @racket[#false]。}
 
-This isn't a bug. It's just a natural consequence of how Pollen's @racket[#%top] works. It can, however, make debugging difficult sometimes. Let's suppose my markup depends on @racket[very-important-function], which I don't import correctly.
-
-@examples[
-(require pollen/top)
-(module vif racket/base
-    (define (very-important-function . xs) `(secrets-of-universe ,@xs)))
-(code:comment @#,t{Forgot to (require 'vif)})
-(very-important-function "Bonjour")
-]
-
-So the undefined-function bug goes unreported. Again, that's not a bug in Pollen — there's just no way for it to tell the difference between an identifier that's deliberately undefined and one that's inadvertently undefined. If you want to guarantee that you're invoking a defined identifier, use @racket[def/c].}
-
-
-@defform[(def/c id)]{Invoke @racket[_id] if it's a defined identifier, otherwise raise an error. This form reverses the behavior of @racket[#%top] (in other words, it restores default Racket behavior). 
-
-Recall this example from before. In standard Racket, you get an undefined-identifier error.
-
-@examples[
-(module vif racket/base
-    (define (very-important-function . xs) `(secrets-of-universe ,@xs)))
-(code:comment @#,t{Forgot to (require 'vif)})
-(very-important-function "Bonjour")
-]
-
-But with @racketmodname[pollen/top], the issue is not treated as an error.
+这不是一个bug。这只是 Pollen 的 @racket[#%top] 工作方式的自然结果。但是，它有时会使调试变得困难。假设我的标记依赖于 @racket[very-important-function]，而我没有正确导入它。
 
 @examples[
 (require pollen/top)
@@ -88,7 +64,31 @@ But with @racketmodname[pollen/top], the issue is not treated as an error.
 (very-important-function "Bonjour")
 ]
 
-By adding @racket[def/c], we restore the usual behavior, guaranteeing that we get the defined version of @racket[very-important-function] or nothing.
+因此，未定义的函数bug未被报告。同样，这不是 Pollen 中的错误——它无法区分故意未定义的标识符和无意中未定义的标识符。如果要保证调用的是已定义的标识符，请使用 @racket[def/c]。}
+
+
+@defform[(def/c id)]{如果是已定义的标识符，则调用 @racket[_id]，否则引发错误。这种形式反转了 @racket[#%top] 的行为（换句话说，它恢复了默认的 Racket 行为）。
+
+回想一下之前的这个例子。在标准 Racket 中，您会收到未定义标识符错误。
+
+@examples[
+(module vif racket/base
+    (define (very-important-function . xs) `(secrets-of-universe ,@xs)))
+(code:comment @#,t{Forgot to (require 'vif)})
+(very-important-function "Bonjour")
+]
+
+但是对于 @racketmodname[pollen/top] 来说，该问题不会被视为错误。
+
+@examples[
+(require pollen/top)
+(module vif racket/base
+    (define (very-important-function . xs) `(secrets-of-universe ,@xs)))
+(code:comment @#,t{Forgot to (require 'vif)})
+(very-important-function "Bonjour")
+]
+
+通过添加@racket[def/c]，我们恢复了通常的行为，保证我们得到@racket[very-important-function] 的定义版本或什么都没有。
 
 @examples[
 (require pollen/top)

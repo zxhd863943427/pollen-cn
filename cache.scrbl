@@ -5,23 +5,23 @@
 @(define my-eval (make-base-eval))
 @(my-eval `(require pollen))
 
-@title{Cache}
+@title{Cache（缓存）}
 
 @defmodule[pollen/cache]
 
-The slowest part of a Pollen @racket[render] is compiling a source file. Because Pollen allows source files to be edited and previewed dynamically, these files get recompiled a lot. Therefore, Pollen stores copies of the exports of source files — namely, whatever is stored in @code[(format "~a" pollen-main-export)] and @code[(format "~a" pollen-meta-export)] — in a cache so they can be reused.
+Pollen @racket[render]最慢的部分是编译一个源文件。因为Pollen允许动态编辑和预览源文件，这些文件经常被重新编译。因此，Pollen将源文件的输出副本--即存储在@code[(format "~a" pollen-main-export)]和@code[(format "~a" pollen-meta-export)]中的任何内容--存储在一个缓存中，以便它们可以被重复使用。
 
-In each directory of your project, Pollen writes cache files into a subdirectory called @filepath{compiled}. The files are stored on disk so they can be reused between sessions. If you delete files within a cache directory (or the whole thing), don't worry — everything will get regenerated. (However, I don't recommend trying to read or write directly to any @filepath{compiled} directory, as the implementation details of the cache are subject to change.)
+在项目的每个目录中，Pollen 将缓存文件写入名为 @filepath{compiled} 的子目录中。这些文件存储在磁盘上，因此可以在会话之间重复使用。如果您删除缓存目录中的文件（或整个文件），请不要担心 - 一切都会重新生成。 （但是，我不建议尝试直接读取或写入任何 @filepath{compiled} 目录，因为缓存的实现细节可能会发生变化。）
 
 @section{Preloading and reseting}
 
-Though the cache will be populated as you use Pollen, you can also preheat it with @exec{@seclink["raco_pollen_setup"]}. This command will load all your source files into the cache. This will give you the snappiest performance during an interactive session with the project server.
+虽然缓存会在您使用 Pollen 时被填充，但您也可以使用 @exec{@seclink["raco_pollen_setup"]} 对其进行预热。此命令会将所有源文件加载到缓存中。这将在与项目服务器的交互会话期间为您提供最快速的性能。
 
-If you want to reset all the compile caches, use @exec{@seclink["raco_pollen_reset"]}.
+如果要重建所有编译缓存，请使用 @exec{@seclink["raco_pollen_reset"]}。
 
 @section{Disabling the cache}
 
-The compile cache is controlled by the @seclink["setup-overrides"]{overridable value} @racket[setup:compile-cache-active]. Thus, to disable the compile cache, add a @racket[setup] submodule to your @filepath{pollen.rkt} like so:
+编译缓存由@seclink["setup-overrides"]{overridable value} @racket[setup:compile-cache-active] 控制。因此，要禁用编译缓存，请将 @racket[setup] 子模块添加到您的 @filepath{pollen.rkt} 中，如下所示：
 
 @codeblock|{
 (module setup racket/base
@@ -29,7 +29,7 @@ The compile cache is controlled by the @seclink["setup-overrides"]{overridable v
   (define compile-cache-active #f))
 }|
 
-Pollen also caches rendered output files, so if you want to disable all caching — thus forcing everything to recompile, every time — you should also disable the render cache by overriding @racket[setup:render-cache-active]:
+Pollen也会缓存渲染的输出文件，所以如果你想禁用所有的缓存--从而迫使所有的东西每次都重新编译--你还应该通过覆盖@racket[setup:render-cache-active]禁用渲染缓存。
 
 @codeblock|{
 (module setup racket/base
@@ -38,18 +38,18 @@ Pollen also caches rendered output files, so if you want to disable all caching 
   (define render-cache-active #f))
 }|
 
-Be warned that this will make your rendering much slower. But you will be guaranteed an entirely fresh recompile each time, which can sometimes be useful in development.
+请注意，这会使您的渲染速度变慢。但是会保证您每次都完全重新编译，这在开发中有时会很有用。
 
 
 @section{Scope of dependency tracking}
 
-The compile cache tracks the modification date of the source file, the current setting of @secref["The_POLLEN_environment_variable"], and the modification dates of the template and @filepath{pollen.rkt} (if they exist). For @tt{poly} source files, it also tracks the @racket[current-poly-target]. It also tracks files you've listed in the optional setup value @racket[setup:cache-watchlist] and environment variables listed in the optional setup value @racket[setup:envvar-watchlist].
+编译缓存跟踪源文件的修改日期、@secref["The_POLLEN_environment_variable"] 的当前设置以及模板和@filepath{pollen.rkt} 的修改日期（如果它们存在）。对于@tt{poly} 源文件，它还跟踪@racket[current-poly-target]。它还跟踪您在可选设置值@racket[setup:cache-watchlist] 中列出的文件和在可选设置值@racket[setup:envvar-watchlist] 中列出的环境变量。
 
-It does not, however, track every possible dependency. So in a complex project, it's possible to create deep dependencies that aren't noticed by the cache. In particular, Pollen does not track pagetree files as dependencies of other source files. Thus, if you change a pagetree, you'll ordinarily need to use @exec{raco pollen reset} to clear the caches.
+但是，它不会跟踪所有可能的依赖关系。因此，在一个复杂的项目中，可能会创建缓存未注意到的深层依赖关系。尤其要注意的是，Pollen 不会将 pagetree 文件作为其他源文件的依赖项进行跟踪。因此，如果您更改页面树，您通常需要使用 @exec{raco pollen reset} 来清除缓存。
 
-Unfortunately, there's no way around this problem. For the cache to be useful, there has to be a limit on the horizon of dependency checking. To capture every possible dependency, the cache would have to recompile every file, every time — which would be equivalent to not caching at all.
+不幸的是，没有办法解决这个问题。为了使缓存有用，依赖检查的范围必须受到限制。为了捕获所有可能的依赖关系，缓存每次都必须重新编译每个文件——这相当于根本不缓存。
 
-Those who need that kind of deep dynamism can disable the cache (with the setup values @racket[setup:render-cache-active] and @racket[setup:compile-cache-active]).
+那些需要这种深度动态的人可以禁用缓存（使用设置值@racket[setup:render-cache-active] 和@racket[setup:compile-cache-active]）。
 
 
 @section[#:tag-prefix "cache"]{Functions}
@@ -66,11 +66,11 @@ txexpr?]
 [source-path pathish?])
 hash-eq?]
 )]
-Attempt to retrieve the requested value out of the cache. If it's not there, or out of date, @racket[dynamic-require] is used to update it from the source.
+尝试从缓存中检索请求的值。如果它不存在或已过期，则使用 @racket[dynamic-require] 从源更新它。
 
-These functions are the lower-level cousins of @racket[get-doc] and @racket[get-metas], which have a more convenient interface. Unless you have a special reason, you're better off using those.
+这些函数是@racket[get-doc] 和@racket[get-metas] 的低级表亲，具有更方便的接口。除非您有特殊原因，否则最好使用它们。
 
-If you want the speed benefit of the cache, you should use @racket[cached-doc] and @racket[cached-metas] to get data from Pollen source files in preference to functions like @racket[require], @racket[local-require], and @racket[dynamic-require]. Those will also work. They'll just be slower.
+如果你想要获得缓存的速度优势，你应该使用@racket[cached-doc] 和@racket[cached-metas] 从 Pollen 源文件中获取数据，而不是使用像@racket[require]、@racket[local -require] 和 @racket[dynamic-require]这样的函数。这些也将起作用。他们只会慢一点。
 
 
 @defproc[

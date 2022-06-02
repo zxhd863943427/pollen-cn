@@ -9,14 +9,14 @@
 
 @defmodule[pollen/template]
 
-Convenience functions for templates. These are automatically imported into the @racket[eval] environment when rendering with a template (see @racket[render]).
+模板的便利函数。当使用模板渲染时，这些会自动导入到 @racket[eval] 环境中（参见 @racket[render]）。
 
 
 @section{HTML}
 
 @defmodule[pollen/template/html]
 
-Functions specific to HTML templates.
+特定于 HTML 模板的函数。
 
 @defproc[
 (->html
@@ -25,7 +25,7 @@ Functions specific to HTML templates.
 [#:attrs html-attrs (or/c #f txexpr-attrs?) #f]
 [#:splice? splice-html? boolean? #f])
 string?]
-Convert @racket[_xexpr-or-xexprs] to an HTML string. Similar to @racket[xexpr->string], but consistent with the HTML spec, text that appears within @code{script} or @code{style} blocks will not be escaped.
+将 @racket[_xexpr-or-xexprs] 转换为 HTML 字符串。类似于 @racket[xexpr->string]，但与 HTML 规范一致，出现在 @code{script} 或 @code{style} 块中的文本不会被转义。
 
 @examples[#:eval my-eval
 (define tx '(root (script "3 > 2") "Why is 3 > 2?"))
@@ -33,7 +33,7 @@ Convert @racket[_xexpr-or-xexprs] to an HTML string. Similar to @racket[xexpr->s
 (->html tx)
 ]
 
-The optional keyword arguments @racket[_html-tag] and @racket[_html-attrs] let you set the outer tag and attributes for the generated HTML. If @racket[_xexpr-or-xexprs] already has an outer tag or attributes, they will be replaced.
+可选的关键字参数 @racket[_html-tag] 和 @racket[_html-attrs] 允许您为生成的 HTML 设置外部标记和属性。如果 @racket[_xexpr-or-xexprs] 已经有一个外部标签或属性，它们将被替换。
 
 @examples[#:eval my-eval
 (define tx '(root ((id "huff")) "Bunk beds"))
@@ -43,7 +43,7 @@ The optional keyword arguments @racket[_html-tag] and @racket[_html-attrs] let y
 (->html tx #:tag 'div #:attrs '((id "doback")))
 ]
 
-Whereas if @racket[_xexpr-or-xexprs] has no tag or attributes, they will be added. If you supply attributes without a tag, you'll get an error.
+而如果 @racket[_xexpr-or-xexprs] 没有标签或属性，它们将被添加。如果您提供没有标签的属性，您将收到错误消息。
 
 @examples[#:eval my-eval
 (define x "Drum kit")
@@ -54,7 +54,7 @@ Whereas if @racket[_xexpr-or-xexprs] has no tag or attributes, they will be adde
 ]
 
 
-If the generated HTML has an outer tag, the @racket[_splice-html?] option will strip it off. Otherwise this option has no effect.
+如果生成的 HTML 有一个外部标签，@racket[_splice-html?] 选项将把它去掉。否则此选项无效。
 
 @examples[#:eval my-eval
 (define tx '(root (p "Chicken nuggets")))
@@ -70,7 +70,7 @@ If the generated HTML has an outer tag, the @racket[_splice-html?] option will s
 
 
 
-Be careful not to pass existing HTML strings into this function, because the angle brackets will be escaped. Fine if that's what you want, but you probably don't.
+注意不要将现有的 HTML 字符串传递给这个函数，因为尖括号会被转义。如果这是你想要的，那很好，但你可能不想要。
 
 @examples[#:eval my-eval
 (define tx '(p "You did " (em "what?")))
@@ -78,7 +78,7 @@ Be careful not to pass existing HTML strings into this function, because the ang
 (->html (->html tx))
 ]
 
-As the input contract suggests, this function can take either a single @racket[xexpr?] or a list of @racket[xexpr?], with the expected results.
+正如输入合约所暗示的，此函数可以采用单个 @racket[xexpr?] 或 @racket[xexpr?] 列表，并具有预期的结果。
 
 @examples[#:eval my-eval
 (define tx '(p "You did " (em "what?")))

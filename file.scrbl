@@ -9,35 +9,35 @@
 
 @defmodule[pollen/file]
 
-A utility module that provides functions for working with Pollen source and output files. In ordinary use, you probably won't need these. But if you want to do more elaborate Pollen hacking, here they are.
+一个实用模块，提供了处理 Pollen 源文件和输出文件的功能。在普通使用中，你可能不需要这些。但如果你想对 Pollen 进行更精细的处理，它们就在这里。
 
-Pollen handles six kinds of source files:
+Pollen 可以处理六种源文件：
 
 
 @itemlist[
-@item{@bold{Preprocessor}, with file extension @ext[pollen-preproc-source-ext]}
+@item{ @bold{Preprocessor} ，文件扩展名为 @ext[pollen-preproc-source-ext]}
 
-@item{@bold{Markup}, with file extension @ext[pollen-markup-source-ext]} 
+@item{ @bold{Markup} ，文件扩展名为 @ext[pollen-markup-source-ext]}
 
-@item{@bold{Markdown}, with file extension @ext[pollen-markdown-source-ext]} 
+@item{ @bold{Markdown} ，文件扩展名为 @ext[pollen-markdown-source-ext]}
 
-@item{@bold{Null}, with file extension @ext[pollen-null-source-ext]}
+@item{ @bold{Null} ，文件扩展名为 @ext[pollen-null-source-ext]}
 
-@item{@bold{Scribble}, with file extension @ext[pollen-scribble-source-ext]}
+@item{ @bold{Scribble} ，文件扩展名为 @ext[pollen-scribble-source-ext]}
 
-@item{@bold{Pagetree}, with file extension @ext[pollen-pagetree-source-ext]. This is the only source type that does not produce an output file.}
+@item{ @bold{Pagetree} ，文件扩展名为 @ext[pollen-pagetree-source-ext]。这是唯一不生成输出文件的源类型。}
 
 ]
 
 
-The functions in this module rely on file extensions specified in @racketmodname[pollen/setup]. These extensions can be overridden within a project — see @secref["setup-overrides"]. 
+这个模块中的函数依赖于 @racketmodname[pollen/setup] 中指定的文件扩展。这些扩展名可以在一个项目中被覆盖--见 @secref["setup-overrides"] 。
 
-For each kind of Pollen source file, the corresponding output file name is derived by removing the extension from the name of the source file. So the preprocessor source file @filepath{default.css.pp} would become @filepath{default.css}. (See 
-@secref["Saving___naming_your_source_file"] if this rings no bells.)
+对于每种 Pollen 源文件，对应的输出文件名是通过从源文件名中去掉扩展名而得到的。所以预处理器源文件 @filepath{default.css.pp} 会变成 @filepath{default.css} 。 (另见
+@secref["Saving___naming_your_source_file"] ，如果这一点没有印象的话。)
 
-Scribble files work differently — the corresponding output file is the source file but with an @filepath{html} extension rather than @filepath{scrbl}. So @filepath["pollen.scrbl"] would become @filepath["pollen.html"].
+Scribble 文件的工作方式不同--相应的输出文件是源文件，但扩展名为 @filepath{html} ，而不是 @filepath{scrbl} 。所以 @filepath["pollen.scrbl"] 会变成 @filepath["pollen.html"] 。
 
-For more about Pollen's file model, see @secref["File_formats"].
+关于 Pollen 的文件模型的更多信息，请参见 @secref["File_formats"] 。
 
 @deftogether[
 (@defproc[
@@ -70,7 +70,7 @@ boolean?]
 [val any/c]) 
 boolean?]
 )]
-Test whether @racket[_val] is a path representing a source file of the specified type, based on its file extension. Does not check whether @racket[_val] exists.
+根据文件扩展名，测试 @racket[_val] 是否是代表指定类型的源文件的路径。不检查 @racket[_val] 是否存在。
 
 @examples[#:eval my-eval
 (preproc-source? "main.css.pp")
@@ -108,7 +108,7 @@ path?]
 [p pathish?]) 
 path?]
 )]
-Convert an output path @racket[_p] into the source path of the specified type that would produce this output path. This function simply generates a corresponding source path — it does not ask whether this source path exists. (If you want a guarantee that the file exists, use @racket[get-source].)
+将输出路径 @racket[_p] 转换为产生该输出路径的指定类型的源路径。这个函数只是生成了一个相应的源路径--它并不询问这个源路径是否存在。(如果你想保证文件的存在，请使用 @racket[get-source] )。
 
 @examples[#:eval my-eval
 (define name "default.html")
@@ -153,13 +153,13 @@ Convert an output path @racket[_p] into the source path of the specified type th
 [p pathish?]) 
 (or/c #f path?)]
 )]
-Find an existing source path that would produce the output path @racket[_p]. 
+查找将产生输出路径 @racket[_p] 的现有源路径。
 
-The omnibus @racket[get-source] will check source formats in this order: @racket[get-markup-source], @racket[get-markdown-source], @racket[get-preproc-source], @racket[get-null-source], and @racket[get-scribble-source]. 
+综合 @racket[get-source] 将按以下顺序检查源格式： @racket[get-markup-source] 、 @racket[get-markdown-source] 、 @racket[get-preproc-source] 、@racket[ get-null-source] 和 @racket[get-scribble-source]。
 
-The type-specific variants will, of course, only return a source file of the specified type.
+当然，特定类型的变体将只返回一个指定类型的源文件。
 
-In all cases, if there is no corresponding source, return @racket[#f].
+在所有情况下，如果没有相应的源文件，则返回 @racket[#f] 。
 
 
 
@@ -168,11 +168,11 @@ In all cases, if there is no corresponding source, return @racket[#f].
 (->output-path
 [p pathish?]) 
 path?]
-Convert a source path @racket[_p] into its corresponding output path. This function simply generates a path for a file — it does not ask whether the file exists.
+将一个源路径 @racket[_p] 转换为其对应的输出路径。这个函数只是为一个文件生成一个路径--它并不询问该文件是否存在。
 
-If @racket[_p] has a @seclink["The_poly_output_type"]{@id[pollen-poly-source-ext] output type}, then @racket[->output-path] uses @racket[current-poly-target] as the output-path extension.
+如果 @racket[_p] 有 @seclink["The_poly_output_type"]{@id[pollen-poly-source-ext] 输出类型} ，那么 @racket[->output-path] 将使用 @racket[current-poly-target] 作为输出路径扩展。
 
-Otherwise, there are no type-specific variants for this function because the output path of a Pollen source file is @seclink["Saving___naming_your_source_file"]{determined by its name}.
+否则，这个函数没有特定类型的变体，因为 Pollen 源文件的输出路径是 @seclink["Saving___naming_your_source_file"]{由其名称决定的} 。
 
 @examples[#:eval my-eval
 (->output-path "main.css.pp")
