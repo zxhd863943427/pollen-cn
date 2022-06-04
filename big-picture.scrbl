@@ -13,7 +13,7 @@ Pollen 发布系统的关键组件和概念以及它们如何组合在一起的�
 
 @item{@bold{你是一个程序员。} 不要恐慌。但是让我们承认这一点——如果你的书是一个程序，那么你在某种程度上是在编程它。您无需了解任何编程即可开始使用 Pollen。但是你必须愿意学习一些编程思想。 （而那些使用过其他基于模板的 HTML 生成器的人可能不得不忘记一些事情。）}
 
-@item{@bold{花粉项目由源文件+静态文件组成。} A @italic{源文件} 是一个可以编译产生特定输出的文件。 @italic{static file} 可以直接使用（例如，SVG 文件或网络字体）。通常，您书籍的文本内容将存在于源文件中，而其他元素将是静态文件。}
+@item{@bold{ Pollen 项目由源文件+静态文件组成。} A @italic{源文件} 是一个可以编译产生特定输出的文件。 @italic{static file} 可以直接使用（例如，SVG 文件或网络字体）。通常，您书籍的文本内容将存在于源文件中，而其他元素将是静态文件。}
 
 @item{@bold{源代码控制是个好主意。} 由于 Pollen 项目是软件项目，因此可以使用源代码控制和协作系统轻松管理它们，例如 @link["http://github.com"]{GitHub}。如果您是一名作家，请不要害怕这些系统——学习曲线通过修订和编辑跟踪得到回报，这比使用 Word 或 PDF 文件要容易得多。}
 
@@ -23,12 +23,12 @@ Pollen 发布系统的关键组件和概念以及它们如何组合在一起的�
 
 @itemlist[
 
-@item{@bold{一切都是球拍。} Pollen 系统完全采用 Racket 编程语言构建。您的一些源文件将在 Racket 中。其他人将使用其中一种花粉语言方言。但在幕后，一切都变成了球拍代码。所以如果你打算在 Pollen 中做任何严肃的工作，你也需要学习一些关于 Racket 的基础知识（例如@other-doc['(lib "scribblings/quick/quick.scrbl")]）。}
+@item{@bold{一切都是 Racket 。} Pollen 系统完全采用 Racket 编程语言构建。您的一些源文件将在 Racket 中。其他人将使用其中一种 Pollen 语言方言。但在幕后，一切都变成了 Racket 代码。所以如果你打算在 Pollen 中做任何严肃的工作，你也需要学习一些关于 Racket 的基础知识（例如@other-doc['(lib "scribblings/quick/quick.scrbl")]）。}
 
 @item{@bold{Pollen 语言基于 Scribble。} Scribble 是 Racket 语言的一种变体，它颠覆了通常的编程语法：Scribble 源文件不是嵌入文本内容的代码，而是嵌入代码的文本（这个想法来自@link["https://en.wikipedia.org/wiki/TeX"]{TeX})。 Pollen 语言改编自 Scribble。所以大多数关于 Scribble 的事情对 Pollen 也是正确的（参见 @other-doc['(lib "scribblings/scribble/scribble.scrbl")]）。}
 
 
-@item{@bold{花粉语言是一组方言。} 花粉方言具有共同的句法和结构。但是它们在细节上有所不同，这使得它们更好地适应某些类型的源文件（例如，Pollen 的一种方言可以理解 Markdown；其他方言则不能）。使用适合手头任务的任何一种。}
+@item{@bold{ Pollen 语言是一组方言。}  Pollen 方言具有共同的句法和结构。但是它们在细节上有所不同，这使得它们更好地适应某些类型的源文件（例如，Pollen 的一种方言可以理解 Markdown；其他方言则不能）。使用适合手头任务的任何一种。}
 
 ]
 
@@ -66,7 +66,7 @@ Pollen 开发环境具有三个主要部分：DrRacket 代码编辑器、项目�
 更多关于 X 表达式的内容将被提及。但是几个优点应该已经很明显了。首先，没有多余的尖括号，X 表达式可以说比等效的 HTML 更具可读性。其次，X 表达式优于将 HTML 视为简单字符串，因为它保留了元素的内部结构。第三，X 表达式是 Racket 中的原生数据类型。
 
 
-@section{花粉命令语法}
+@section{ Pollen 命令语法}
 
 如上所述，Pollen 源文件不是嵌入了文本的代码，而是嵌入了代码的文本。 （有关更多信息，请参见 @secref["pollen-command-syntax"]。）
 
@@ -80,17 +80,17 @@ Bonjour, tout le monde: comment ça va?
 
 @item{@bold{命令以 ◊ 开头。} 一个简单的规则：如果 Pollen 源文件中的某些内容以 @litchar{◊} 开头，则将其视为命令；否则它被视为普通文本。}
 
-@item{@bold{在花粉模式或球拍模式下编写命令。} 命令可以使用两种等效的符号系统：Pollen 面向文本的命令语法或标准 Racket 语法。}
+@item{@bold{在 Pollen 模式或 Racket 模式下编写命令。} 命令可以使用两种等效的符号系统：Pollen 面向文本的命令语法或标准 Racket 语法。}
 
 
-@item{@bold{球拍中的所有东西也都在花粉中。} Pollen 不是一种淡化的``模板语言''。Racket 是一种完全配置的编程语言，并且每个 Racket 功能都可以在 Pollen 中使用。}
+@item{@bold{ Racket 中的所有东西也都在 Pollen 中。} Pollen 不是一种淡化的``模板语言''。Racket 是一种完全配置的编程语言，并且每个 Racket 功能都可以在 Pollen 中使用。}
 
 ]
 
 
 @section{预处理器}
 
-The @italic{预处理器}是花粉中最简单的处理模式。
+The @italic{预处理器}是 Pollen 中最简单的处理模式。
 
 @itemlist[
 
@@ -108,11 +108,11 @@ The @italic{预处理器}是花粉中最简单的处理模式。
 
 @itemlist[
 
-@item{@bold{模板可以是任何格式。}通常花粉模板是 HTML。但他们不必如此。模板可以生成任何类型的文件——基于文本的 (XML) 或非基于文本的 (PDF)。}
+@item{@bold{模板可以是任何格式。}通常 Pollen 模板是 HTML。但他们不必如此。模板可以生成任何类型的文件——基于文本的 (XML) 或非基于文本的 (PDF)。}
 
 @item{@bold{Markdown 创作模式。} Pollen 具有内置的 Markdown 解析器，因此您可以将 Markdown 源导入 Pollen 出版物。}
 
-@item{@bold{花粉标记。} 花粉标记允许您自由定义自己的标记标签，并将行为附加到它们。}
+@item{@bold{ Pollen 标记。}  Pollen 标记允许您自由定义自己的标记标签，并将行为附加到它们。}
 
 @item{@bold{混合源类型。}每个文本源在进入模板之前都会转换为X表达式。因此，在一个项目中可以有多个方言的源文件。}
 

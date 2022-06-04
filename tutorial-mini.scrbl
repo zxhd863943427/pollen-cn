@@ -74,7 +74,7 @@ for x in range(3):
 }
 }
 
-@item{加载这些资源后，Highlight.js 将使用标记 @tt{<pre><code class="language-name">...</code></pre>} 自动语法高亮任何代码。所以在花粉标记中，你可以直接这样写：
+@item{加载这些资源后，Highlight.js 将使用标记 @tt{<pre><code class="language-name">...</code></pre>} 自动语法高亮任何代码。所以在 Pollen 标记中，你可以直接这样写：
 
 @codeblock{
 #lang pollen/markup
@@ -124,7 +124,7 @@ for x in range(3):
 }
 }
 
-@item{制作添加分隔符的 Pollen 标记函数以及将触发 JavaScript 排版的 @tt{mathjax} 包装标记。例如，假设我们想用@code{◊${equation ...}} 表示内联方程，并用@code{◊$${equation ...}} 表示块方程。我们的标签函数可能如下所示：
+@item{制作添加分隔符的 Pollen 标签函数以及将触发 JavaScript 排版的 @tt{mathjax} 包装标记。例如，假设我们想用@code{◊${equation ...}} 表示内联方程，并用@code{◊$${equation ...}} 表示块方程。我们的标签函数可能如下所示：
 
 @codeblock{
 #lang pollen

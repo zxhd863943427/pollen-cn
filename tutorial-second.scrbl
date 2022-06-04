@@ -135,9 +135,9 @@ My name is _Brennan_, and I enjoy:
 
 与预处理器相比，创作模式提供了更多的抽象性和灵活性。当然，它也需要更多的努力来设置。
 
-Pollen 提供了两种创作模式：一种使用 Markdown 语法（我们将在本教程后面介绍），另一种使用自由格式标记语法（我们将在 @seclink["third-tutorial"] {第三个教程}）。在这两种情况下，基本过程是相同的：1) 将源代码编译为 X 表达式，然后 2) 使用模板将该 X 表达式转换为目标文件格式。
+Pollen 提供了两种创作模式：一种使用 Markdown 语法（我们将在本教程后面介绍），另一种使用自由格式标记语法（我们将在 @seclink["third-tutorial"]{第三个教程} 中学习）。在这两种情况下，基本过程是相同的：1) 将源代码编译为 X 表达式，然后 2) 使用模板将该 X 表达式转换为目标文件格式。
 
-@subsection{X 表达式（X-expression）}
+@subsection{X 表达式}
 
 @(noskip-note)
 

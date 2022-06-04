@@ -182,7 +182,7 @@ any/c]
 @section[#:tag "core"]{Parameters}
 
 @defparam[current-metas val (or/c #f hash?) #:value #f]
-保存当前 Pollen 源的 @racket[metas] 。在标记函数中，您可以在函数体中引用 @racket[(current-metas)] ，而不是将 @racket[metas] 作为参数传递。同样，如果您的标记函数调用其他标记函数，它们都可以调用 @racket[(current-metas)] 而不是传递值。
+保存当前 Pollen 源的 @racket[metas] 。在标签函数中，您可以在函数体中引用 @racket[(current-metas)] ，而不是将 @racket[metas] 作为参数传递。同样，如果您的标签函数调用其他标签函数，它们都可以调用 @racket[(current-metas)] 而不是传递值。
 
 @racket[(current-metas)] 也会在模板中工作，持有当前被渲染到模板中的源的 @racket[metas] 。
 

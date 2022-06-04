@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@title[#:style 'toc]{花粉:这本书是一个程序}
+@title[#:style 'toc]{ Pollen :这本书是一个程序}
 
 @author[(author+email "Matthew Butterick" "mb@mbtype.com")]
 
@@ -20,11 +20,11 @@ Pollen 的核心是一个论点：
 
 @item{我们使数字图书比其前辈更好的方法是利用这种可编程性。}]
 
-这就是花粉的目的。
+这就是 Pollen 的目的。
 
 并不是说您需要成为程序员才能开始使用 Pollen。相反，Pollen 语言是基于标记的，因此您可以自然地编写和编辑文本。但是，当您想要自动执行重复性任务、添加交叉引用或从其他来源提取数据时，您可以从文本中访问完整的编程语言。
 
-这个编程语言就是 @link["http://racket-lang.org"]{Racket}。我之所以选择 Racket，是因为它具有一些使 Pollen 成为可能的独特功能。因此，如果您对它不熟悉，请不要惊慌。这对我来说很陌生。一旦你看到你可以用球拍和花粉做什么，你可能会被说服。我曾是。
+这个编程语言就是 @link["http://racket-lang.org"]{Racket}。我之所以选择 Racket，是因为它具有一些使 Pollen 成为可能的独特功能。因此，如果您对它不熟悉，请不要惊慌。这对我来说很陌生。一旦你看到你可以用 Racket 和 Pollen 做什么，你可能会被说服。我曾是。
 
 或者，如果您能找到更好的数字出版工具，请使用它。但我永远不会回到以前的工作方式了。
 

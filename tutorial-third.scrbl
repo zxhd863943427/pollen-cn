@@ -7,7 +7,7 @@
 @(my-eval `(require pollen pollen/decode pollen/template pollen/tag xml racket/list txexpr))
 
 
-@title[#:tag "third-tutorial"]{第三个教程： Pollen 标记和标签功能}
+@title[#:tag "third-tutorial"]{第三个教程： Pollen 标记和标签函数}
 
 现在，你要做的是好事情了。在本教程中，你将使用 Pollen 来发布一篇用 Pollen 标记编写的多页文章。你将了解到:
 
@@ -16,11 +16,11 @@
 
 @item{使用 Pollen 标记添加标签和属性}
 
-@item{将行为附加到标记函数}
+@item{将行为附加到标签函数}
 
 @item{@filepath{pollen.rkt} 文件}
 
-@item{使用带有 Pollen 标记的 @racket[decode]}
+@item{通过 Pollen 标记使用 @racket[decode]}
 
 @;item{@exec{raco pollen render} 和 @exec{raco pollen publish}}
 
@@ -71,7 +71,7 @@
 
 @item{@bold{无结构验证}。 您可以按任何顺序使用任何您想要的标签，而且您无需提前定义它们。您的文档仍然有效。}
 
-@item{@bold{ Racket 处理}。  Pollen 标记可以使用 Racke t函数为其附加行为，可以在你使用它们之前，也可以在之后。}
+@item{@bold{ Racket 处理}。  Pollen 标记可以使用 Racket 函数为其附加行为，可以在你使用它们之前，也可以在之后。}
 
 ]
 
@@ -79,7 +79,7 @@
 
 @subsection{``但我真的需要 XML……''}
 
-您可以拥有 XML。使用 Pollen 标记生成 XML 文件，然后将这些文件输入现有的 XML 处理管道并没有错。换句话说，使用 Pollen 标记，您可以将 XML 视为一种输出格式，而不是一种输入格式。 
+您可以拥有 XML。使用 Pollen 标记生成 XML 文件，然后将这些文件输入现有的 XML 处理管道完全没有问题。换句话说，使用 Pollen 标记，您可以将 XML 视为一种输出格式，而不是一种输入格式。 
 
 在本教程中，我将使用 HTML 模板呈现 Pollen 标记。但是您可以轻松地将相同的工作流程与 XML 模板一起使用，从而得到 XML 文件。
 
@@ -94,7 +94,7 @@ Pollen 标记是一个自由格式的标记系统，可让您在文本中添加�
 
 @subsection{创建 Pollen 标记文件}
 
-我们将使用 Pollen 标记来制作最终将成为 HTML 的源文件。与我们在 @seclink["second-tutorial"]{second tutorial} 中学习的创作模式工作流程一致，我们将从所需的输出文件名 @filepath{article.html} 开始，然后附加新的 Pollen标记后缀，即@filepath{.pm}。
+我们将使用 Pollen 标记来制作最终将成为 HTML 的源文件。与我们在 @seclink["second-tutorial"]{second tutorial} 中学习的创作模式工作流程一致，我们将从所需的输出文件名 @filepath{article.html} 开始，然后附加新的 Pollen 标记后缀，即@filepath{.pm}。
 
 在 DrRacket 中，像这样开始一个名为 @filepath{article.html.pm} 的新文件（像往常一样，您可以使用任何您喜欢的示例文本）：
 
@@ -127,7 +127,7 @@ Markdown 语法将被忽略，并传递到输出：
 
 @subsection{Tags & tag functions}
 
-Pollen 标记使用的是我们在 @secref["Adding_Pollen_commands"] 中第一次看到的 Pollen 命令语法。在此之前，我们用这种语法来调用 @racket[define] 和 @racket[->html] 等函数。这种语法上的一致性是故意的，因为Pollen标记是用来调用一种特殊的函数，叫做 @defterm{tag函数}，这种函数默认是给文本添加一个标签。
+Pollen 标记使用的是我们在 @secref["添加_Pollen_命令"] 中第一次看到的 Pollen 命令语法。在此之前，我们用这种语法来调用 @racket[define] 和 @racket[->html] 等函数。这种语法上的一致性是故意的，因为Pollen 标记是用来调用一种特殊的函数，叫做 @defterm{tag 函数}，这种函数默认是给文本添加一个标签。
 
 要看这是如何工作的，把你的 @filepath{article.html.pm} 文件恢复到原来的状态。
 
@@ -195,7 +195,7 @@ I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
 每个键值对都在小括号里，然后键值对的列表也在小括号里，前面有一个 @racket[单引号] (@litchar{'})，表示文本应该按字面意思使用。
 
-但这很无聊，因此 Pollen 还允许您使用 Racket 样式的 @seclink["keyword-args" #:doc '(lib "scribblings/guide/guide.scrbl")]{的关键字参数} 在标签函数中指定属性：
+但这很无聊，因此 Pollen 还允许您使用 Racket 样式的 @seclink["keyword-args" #:doc '(lib "scribblings/guide/guide.scrbl")]{关键字参数} 在标签函数中指定属性：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -212,7 +212,7 @@ I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 @repl-output{'(span ((class "author")(id "primary")(living "true")) "Prof. Leonard")}
 
 
-既然您知道如何制作标签和属性，您可能想知道 Pollen 标记是否可以用作快速而肮脏的 HTML 符号系统。当然——对于一个快速而肮脏的项目，为什么不呢。回想一下，@secref["X-expressions"] 只是 HTML 中使用的标准尖括号表示法的替代表示法。所以如果你想要这样的 HTML：
+既然您知道如何制作标签和属性，您可能想知道 Pollen 标记是否可以用作快速而肮脏的 HTML 符号系统。当然——对于一个快速而肮脏的项目，为什么不呢。回想一下，@secref["X_表达式"] 只是 HTML 中使用的标准尖括号表示法的替代表示法。所以如果你想要这样的 HTML：
 
 @terminal{<div class="red" style="font-size:150%">Important <em>News</em></div>}
 
@@ -220,11 +220,11 @@ I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
 @code{◊div[#:class "red" #:style "font-size:150%"]{Important ◊em{News}}}
 
-然后将它（使用@racket[->html] 函数）转换成上面的HTML。因此，您已经知道（并且喜欢？）的标签可以在 Pollen 标记中使用，但击键和杂乱无章。
+然后将它（使用@racket[->html] 函数）转换成上面的HTML。因此，您已经知道（并且喜欢？）的标签可以在 Pollen 标记中使用，但击键次数更少，操作也更简单。
 
 不过，如果 Pollen 标记只是 HTML 标签的一个替代符号系统，那就太无聊了。正如我在上面提到的，这仅仅是使用它的最简单方法。
 
-在 XML 精神中，Pollen 标记允许您使用任何您想要的标记。这不那么无聊了。
+本着 XML 精神，Pollen 标记允许您使用任何您想要的标记。这就不那么无聊了。
 
 @subsection{可选阅读：自定义标签有什么用？}
 
@@ -234,7 +234,7 @@ XML jocks 可以跳过这一部分，因为您已经知道了。但是，如果�
 
 @subsubsection{Semantic markup（语义标记）}
 
-@defterm{语义标记} 意味着根据文本的含义向文本添加元数据，而不仅仅是其预期的视觉外观。因此，与其用@code{em} 标签标记@code{RacketCon}，就像我们在上面所做的那样来指示单词的外观，也许我们会用@code{event} 标签来标记它，来表示它是什么 @italic{类型} 的东西。
+@defterm{语义标记} 意味着根据文本的含义向文本添加元数据，而不仅仅是其预期的视觉外观。因此，与其用@code{em} 标签标记@code{RacketCon}，就像我们在上面所做的那样来指示单词的外观，也许我们应该用 @code{event} 标签来标记它，来表示它是什么 @italic{类型} 的东西。
 
 语义标记让作者可以指定在纯视觉术语中会模棱两可的区别，从而捕捉更多的意义和意图。例如，在书籍中，斜体样式通常应用于许多不相关类型的信息：强调的单词、电影标题、首次使用的术语、标题、说明和标签等。在非语义格式化方案下，也许有人会将它们全部标记为@code{em}。但在语义方面，可以酌情标记它们为@code{movie-title}、@code{first-use}、@code{heading}。
 
@@ -252,19 +252,19 @@ XML jocks 可以跳过这一部分，因为您已经知道了。但是，如果�
 
 使用显示驱动模型来管理这种复杂性是一个糟糕的想法——任何尝试过它的人都可以证明这一点。从一种基于显示的文件类型转换为另一种（例如，将文字处理器转换为 HTML，或将 HTML 转换为 PDF）是一种令人沮丧的做法，也是一种令人望而却步的期望。
 
-这并不奇怪。长期以来，文本处理一直由这种显示驱动的模式主导。大多数文字处理器，如Microsoft word和Pages，都是围绕这种模式构建的。在大多数文档最终都要打印在纸上（或PDF之类的纸上模拟器）的时代，它工作得很好。HTML是技术上的飞跃，但不是概念上的飞跃：它主要代表web浏览器中可用的显示选项。
+这并不奇怪。长期以来，文本处理一直由这种显示驱动的模式主导。大多数文字处理器，如Microsoft word和Pages，都是围绕这种模式构建的。在大多数文档最终都要打印在纸上（或者像 PDF 这样的纸张模拟器）的时代，它工作得很好。HTML是技术上的飞跃，但不是概念上的飞跃：它主要代表web浏览器中可用的显示选项。
 
 @margin-note{房间后面有几个 TeX 粉丝在挥舞着他们的手臂。是的，TeX 做对了很多事情。然而，在实践中，它从未成为电子出版的核心工具（公平地说，在编写 TeX 时，电子出版还不存在）。但是 Pollen 中的很多想法都是从 TeX 中提取的。}
 
 要使一个文件具有格式独立性，必须满足两个条件。
 
-首先，该文档必须能够被其他程序读取，这样它们才能将与格式无关的标记转换为特定格式的渲染（例如，将 @code{movie-title} 等语义标签映射到 @code{ 等视觉标签上em}）。大多数文字处理器格式（例如 Word 的 @code{.docx}）不利于创作，因为这些格式不透明且具有专有性。我们没有必要去讨论政治上的反对意见。作为一个实际问题，它们的限制性是毋庸置疑的——如果你不能把你的数据从你的文件中取出来，你就被困住了。
+首先，该文档必须能够被其他程序读取，这样它们才能将与格式无关的标记转换为特定格式的渲染（例如，将 @code{movie-title} 等语义标签映射到 @code{em}）等视觉标签上。大多数文字处理器格式（例如 Word 的 @code{.docx}）不利于创作，因为这些格式不透明且具有专有性。我们没有必要去讨论政治上的反对意见。作为一个实际问题，它们的限制性是毋庸置疑的——如果你不能把你的数据从你的文件中取出来，你就被困住了。
 
 其次，文档本身必须以一种独立于任何一种格式的特殊性的方式来表示。例如，HTML 是一种糟糕的创作格式，因为它鼓励作者在他们的文本中乱扔诸如 @code{h1} 和 @code{span} 之类的 HTML 术语。这些在 HTML 之外没有任何意义，因此总是会导致转换问题。 @seclink["the-case-against-markdown"]{同样适用于 Markdown}，它只是伪装成了 HTML。
 
 
 
-第一个条件的解决方案是使用基于文本的标记而不是专有文件类型。第二个条件的解决方案是让作者为文档定义自定义标签，而不是相反。 Pollen 标记包含了这两个想法。
+第一个条件的解决方案是使用基于文本的标记而不是基于专有文件类型的。第二个条件的解决方案是让作者为文档定义自定义标签，而不是相反。 Pollen 标记包含了这两个想法。
 
 
 @subsection{使用自定义标签}
@@ -276,11 +276,11 @@ XML jocks 可以跳过这一部分，因为您已经知道了。但是，如果�
  
 I want to attend ◊event{RacketCon} this year.}]
 
-This markup will turn into this X-expression:
+这个标记将变成这个 X 表达式：
 
 @repl-output{'(root "I want to attend " (event "RacketCon") " this year.")}
 
-Which is equivalent to this HTML-ish markup:
+这相当于这个 HTML-ish 标记：
 
 @terminal{<root>I want to attend <event>RacketCon</event> this year.</root>}
 
@@ -295,7 +295,7 @@ I want to attend ◊long-and-impractical-tag-name{RacketCon} this year.}]
 
 这条规则有一个小但重要的例外。如果你想知道为什么我有时称它们为@defterm{tag functions} 而不仅仅是@defterm{tags}，那是因为在底层，每个标签都是作为一个函数实现的。此函数的默认行为只是将文本包装在具有给定名称的标签中。
 
-将标签视为函数的好处将在本教程的后面部分变得显而易见。但是这种方法的代价是标签占用与 Pollen 中可用的其他功能（以及扩展为 Racket）相同的命名空间。这意味着，如果您尝试使用已用于现有功能的标签名称，您将收到错误消息。
+将标签视为函数的好处将在本教程的后面部分变得显而易见。但是这种方法的代价是标签与 Pollen （以及 Racket）中可用的其他函数占用了相同的命名空间。这意味着，如果您尝试使用已用于现有函数的标签名称，您将收到错误消息。
 
 例如，假设我们尝试使用名为 @code{length} 的自定义标签：
 
@@ -310,7 +310,7 @@ When we run this file, we get an error:
   expected: list?
   given: "77km"}
 
-问题是 Racket 已经有一个名为 @racket[length] 的函数。根据 Pollen 命令符号的通常规则，您的命令被解释为尝试调用 @racket[length] 函数，而不是应用名为 @tt{length} 的标记。
+问题是 Racket 已经有一个名为 @racket[length] 的函数。根据 Pollen 命令符号的通常规则，您的命令被解释为尝试调用 @racket[length] 函数，而不是应用名为 @tt{length} 的标签。
 
 在实践中，命名空间冲突很少见。但如有必要，它们很容易解决（对于最简单的方法，请参阅@secref["Invoking_tag_functions"]）。
 
@@ -324,9 +324,9 @@ When we run this file, we get an error:
 
 @item{@bold{你永远不会做错。}我想确保你知道语义标记的情况。但是，如果直接使用 HTML 标签会让您的生活更轻松，那就继续吧。}
 
-@item{@bold{反复迭代标记。}不必担心第一次就正确处理所有标签。就像你写完后再重写一样，添加现在看起来的标签，然后改变或增加它们，因为……}
+@item{@bold{反复迭代标签。}不必担心第一次就正确处理所有标签。就像你写完后再重写一样，添加现在看起来的标签，然后改变或增加它们，因为……}
 
-@item{@bold{标签是从写作中出现的。} 试图事先指定所有的标签是没有希望的。在你写作的过程中，你会了解到一些关于文本的东西，这些东西会建议你使用新的标签。}
+@item{@bold{标签是从写作中出现的。} 试图事先指定所有的标签是不太可能的。在你写作的过程中，你会了解到一些关于文本的东西，这些东西会建议你使用新的标签。}
 
 @item{@bold{最好的标签系统是你会坚持使用的。} 标签不是免费的午餐。始终如一地插入它们需要付出努力。不要为过于雄心勃勃的标签方案而烦恼，这会让您感到厌烦而不是帮助。}
 
@@ -339,7 +339,7 @@ And most important:
 @itemlist[
 
 
-@item{@bold{标签是函数。}正如我@seclink["Tags___tag_functions"]{上面提到的}，每个标签背后都有一个函数，它使用标签的内容作为输入。默认标签函数只输出标签及其内容。但是您可以用任何类型的功能替换它。因此，在实践中，您可以将大量劳动力转移到标签上。 }
+@item{@bold{标签是函数。}正如我@seclink["Tags___tag_functions"]{上面提到的}，每个标签背后都有一个函数，它使用标签的内容作为输入。默认标签函数只输出标签及其内容。但是您可以用任何类型的函数替换它。因此，在实践中，您可以将大量劳动力转移到标签上。 }
 ]
 
 
@@ -356,7 +356,7 @@ And most important:
 
 我想你们中的大多数人都知道函数（function）是什么，但为了安全起见——在编程中，@defterm{function} 是一段代码，它接受一些输入，处理它，然后返回一个值。要求一个函数处理一些数据被称为@defterm{调用 (calling)}这个函数。 
 
-将我们引向 Pollen 标签的三个黄金法则:
+让我们看看 Pollen 标签的三个黄金法则:
 
 @itemlist[#:style 'ordered
 
@@ -383,7 +383,7 @@ And most important:
  
 I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
-运行此源文件时会发生什么？ Pollen 从内到外使用输入 @code{"this"} 调用标记函数 @code{strong}。结果是@code{(strong "this")}。然后 Pollen 使用三个输入值 @code{"RacketCon " (strong "this") " year"} 调用标签函数 @code{em}，从而产生 @code{(em "RacketCon " (strong "this") " year")}。最后，Pollen 使用文档中的所有内容调用标记函数 @code{root}，结果是：
+运行此源文件时会发生什么？ Pollen 从内到外使用输入 @code{"this"} 调用标签函数 @code{strong}。结果是@code{(strong "this")}。然后 Pollen 使用三个输入值 @code{"RacketCon " (strong "this") " year"} 调用标签函数 @code{em}，从而产生 @code{(em "RacketCon " (strong "this") " year")}。最后，Pollen 使用文档中的所有内容调用标签函数 @code{root}，结果是：
 
 @repl-output{'(root "I want to attend " (em "RacketCon " (strong "this") " year") ".")}
 
@@ -421,7 +421,7 @@ I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
 一旦你这样做了，当你使用标签时，这个新的行为将被自动调用。
 
-例如，让我们在上面的示例中重新定义 @code{strong} 标记以简单地打印 @racket{BOOM}：
+例如，让我们在上面的示例中重新定义 @code{strong} 标签以简单地打印 @racket{BOOM}：
 
 @fileblock["article.html.pm" @codeblock{
 #lang pollen
@@ -430,7 +430,7 @@ I want to attend ◊em{RacketCon ◊strong{this} year}.}]
 
 I want to attend ◊em{RacketCon ◊strong{this} year}}]
 
-When you run this file, you indeed get:
+当你运行这个文件时，你会得到：
 
 @repl-output{'(root "I want to attend " (em "RacketCon " "BOOM" " year"))}
 
@@ -477,7 +477,7 @@ I want to attend ◊em{RacketCon ◊strong{this} year}}]
 
 @section{组织函数}
 
-在到目前为止的标记函数示例中，我们已经在使用它的源文件中定义了每个函数。这对于特定于特定文件的快速小函数很好。
+在到目前为止的标签函数示例中，我们已经在使用它的源文件中定义了每个函数。这对于特定于特定文件的快速小函数很好。
 
 但更多时候，您会希望使用现有代码库中可用的函数，并存储您自己的函数，以便其他源文件可以使用它们。
 
@@ -499,7 +499,7 @@ The hyperbolic sine of π is close to ◊(number->string (sinh pi)).
 @repl-output{
 '(root "Pi is close to " "3.141592653589793" "." "\n" "The hyperbolic sine of pi is close to " "11.548739357257748" ".")}
 
-一个警告——你仍然在一个 Pollen 标记文件中，所以你调用的任何函数的返回值都必须产生一个字符串或一个 X 表达式，所以它可以合并到文档中。这就是我们使用 @racket[number->string] 包装数值的原因。 （这类似于 @seclink["Setting_up_a_preprocessor_source_file"]{first tutorial} 中引入的限制，其中预处理器文件中使用的函数必须生成文本。）
+一个警告——你仍然在一个 Pollen 标记文件中，所以你调用的任何函数的返回值都必须产生一个字符串或一个 X 表达式，以便可以将其合并到文档中。这就是我们使用 @racket[number->string] 包装数值的原因。 （这类似于 @seclink["Setting_up_a_preprocessor_source_file"]{first tutorial} 中引入的限制，其中预处理器文件中使用的函数必须生成文本。）
 
 如果你的函数产生不兼容的结果，你会得到一个错误。例如，看看当我们从上面的示例中删除 @racket[number->string] 时会发生什么。
 
@@ -522,9 +522,9 @@ pollen markup error: in '(root "Pi is close to " 3.141592653589793 "." "\n" "The
 
 @(noskip-note)
 
-随着您越来越习惯于使用标签函数将行为附加到标签，您可能希望创建一些可以在多个源文件之间共享的函数。 @filepath{pollen.rkt} 文件是同目录（包括子目录）的 Pollen 源文件自动导入的特殊文件。所以@filepath{pollen.rkt} 提供的每个函数和值都可以在这些 Pollen 文件中使用。
+随着您越来越习惯于使用标签函数将行为附加到标记，您可能希望创建一些可以在多个源文件之间共享的函数。 @filepath{pollen.rkt} 文件是同目录（包括子目录）的 Pollen 源文件自动导入的特殊文件。所以@filepath{pollen.rkt} 提供的每个函数和值都可以在这些 Pollen 文件中使用。
 
-首先，使用@filepath{pollen.rkt} 不是强制性的。在 Pollen 源文件中，您始终可以使用 @racket[require] 导入函数和值（如上一节所示）。 @filepath{pollen.rkt} 只是更容易将一组通用定义传播到项目中的每个 Pollen 源文件。
+首先，使用@filepath{pollen.rkt} 不是强制性的。在 Pollen 源文件中，您始终可以使用 @racket[require] 导入函数和值（如上一节所示）。 @filepath{pollen.rkt} 只是更容易将一组通用定义导入到项目中的每个 Pollen 源文件。
 
 其次，请注意@filepath{.rkt} 后缀，@filepath{pollen.rkt} 是包含 Racket 代码而不是 Pollen 代码的源文件。这是默认设置，因为虽然 Pollen 的表示法对于基于文本的源文件更方便，但 Racket 的表示法在您处理代码时更方便。
 
@@ -532,7 +532,7 @@ pollen markup error: in '(root "Pi is close to " 3.141592653589793 "." "\n" "The
 
 第三，@filepath{pollen.rkt} 始终适用于同一目录中的 Pollen 源文件。但这是文件的最小范围，而不是最大范围。嵌套在子目录中的 Pollen 源文件将首先在自己的目录中查找@filepath{pollen.rkt}。但是如果他们找不到它，他们会在父目录中查找，然后是下一个父目录，依此类推。因此，默认情况下，项目根文件夹中的@filepath{pollen.rkt} 将应用于项目中的所有源文件。但是，当您将新的 @filepath{pollen.rkt} 添加到子目录时，它将应用于该子目录及以下的所有文件。
 
-@margin-note{尽管特定于子目录的 @filepath{pollen.rkt} 将取代封闭目录中的那个，但您仍然可以使用 @racket[(require "../pollen.rkt")] 从上面提取定义，并使用 @racket[provide] 将它们传播到当前子目录中。例如，@racket[(provide (all-from-out "../pollen.rkt"))] 将重新导出父目录中的所有内容。}
+@margin-note{尽管特定于子目录的 @filepath{pollen.rkt} 将取代上层父目录中的那个，但您仍然可以使用 @racket[(require "../pollen.rkt")] 从上面提取定义，并使用 @racket[provide] 将它们传播到当前子目录中。例如，@racket[(provide (all-from-out "../pollen.rkt"))] 将重新导出父目录中的所有内容。}
 
 让我们看看这在实践中是如何工作的。在与@filepath{article.html.pm} 相同的目录中，创建一个新的@filepath{pollen.rkt} 文件，如下所示：
 
@@ -542,7 +542,7 @@ pollen markup error: in '(root "Pi is close to " 3.141592653589793 "." "\n" "The
 (define author "Trevor Goodchild")
 }]
 
-这里我们使用@racket[define] 函数（我们之前见过）设置@racket[author] 等于@racket["Trevor Goodchild"]。注意最后一步：与标准 Racket 规则一致，我们必须显式地 @racket[provide] 新值，以便其他文件可以看到它（与 Python 不同，你在 Racket 中 @racket[define] 的东西默认是私有的，而不是公共的）。
+这里我们使用@racket[define] 函数（我们之前见过）设置@racket[author] 等于@racket["Trevor Goodchild"]。注意最后一步：与标准 Racket 规则一致，我们必须显式地 @racket[provide] （公开）新值，以便其他文件可以看到它（与 Python 不同，你在 Racket 中 @racket[define] 的东西默认是私有的，而不是公共的）。
 
 然后更新旧的 @filepath{article.html.pm} 以使用我们的新 @racket[author] 值：
 
@@ -570,7 +570,7 @@ The author is really ◊|author|?
 
 这就是它的全部内容。你可以看到 @filepath{pollen.rkt} 提供的值是如何在两个 Pollen 源文件中自动出现的。
 
-您可以以相同的方式导入函数，包括标记函数。例如，为@racket[em] 添加一个函数：
+您可以以相同的方式导入函数，包括标签函数。例如，为@racket[em] 添加一个函数：
 
 @fileblock["pollen.rkt" @codeblock{
 #lang racket
@@ -582,7 +582,7 @@ The author is really ◊|author|?
 }]
 
 
-我们这里有一个新的符号。请注意，我们将标记函数定义为@racket[(em . elements)] 而不是@racket[(em word)]。在最后一个输入参数之前使用点使其成为 @defterm{rest 参数}。这会将所有剩余的输入参数（无论有多少）放入一个列表中。一般来说，这是标记函数的最佳实践，因为您通常不会事先知道有多少元素将作为输入传递给函数（有关此的更多信息，请参阅@secref["the-text-body"] ）。
+我们这里有一个新的符号。请注意，我们将标签函数定义为@racket[(em . elements)] 而不是@racket[(em word)]。在最后一个输入参数之前使用点使其成为 @defterm{rest 参数}。这会将所有剩余的输入参数（无论有多少）放入一个列表中。一般来说，这是标签函数的最佳实践，因为您通常不会事先知道有多少元素将作为输入传递给函数（有关此的更多信息，请参阅@secref["the-text-body"] ）。
 
 @racket[txexpr] 函数是来自@racket[txexpr] 包（与 Pollen 一起安装）中的一个实用程序。它从标签、属性列表和元素列表构建新的 X 表达式。
 
@@ -611,9 +611,9 @@ The ◊em{author} is ◊em{◊|author|}.
 
 
 
-@section{使用 @tt{root} 标记函数解码标记}
+@section{使用 @tt{root} 标签函数解码标记}
 
-如您所见，运行 Pollen 标记文件时获得的 X 表达式总是以名为 @code{root} 的标记开头。您可以像任何其他标签一样将自定义标签函数附加到 @code{root} — 通过创建一个新函数并将其命名为 @code{root}。 
+如您所见，运行 Pollen 标记文件时获得的 X 表达式总是以名为 @code{root} 的标签开头。您可以像任何其他标签一样将自定义标签函数附加到 @code{root} — 通过创建一个新函数并将其命名为 @code{root}。 
 
 例如，您可以做一些简单的事情，比如更改输出 X 表达式的名称：
 
@@ -632,7 +632,7 @@ The ◊code{root} tag is now called ◊code{content}.
 
 与文档中的其他标签不同，@code{root} 包含文档的全部内容。因此，您附加到 @code{root} 的函数可以对所有内容进行操作。
 
-出于这个原因，使用附加到@code{root} 的标记函数可以做的最有用的事情之一就是@defterm{decoding} 页面的内容。通过解码，我的意思是在计算完页面内的全部标签之后发生的任何内容后处理。
+出于这个原因，使用附加到@code{root} 的标签函数可以做的最有用的事情之一就是@defterm{decoding} 页面的内容。通过解码，我的意思是在计算完页面内的全部标签之后发生的任何内容后处理。
 
 解码是自动完成以下操作的好方法：
 
@@ -646,7 +646,7 @@ The ◊code{root} tag is now called ◊code{content}.
 
 @item{为索引或交叉引用收集数据。}
 
-@item{任何文件增强功能，a）可以用程序处理，b）你不希望在你的源文件中硬编码。}
+@item{任何文件增强函数，a）可以用程序处理，b）你不希望在你的源文件中硬编码。}
 
 ]
 
@@ -797,7 +797,7 @@ And a new line.
 The second paragraph—isn’t it great.    
 }
 
-顺便说一句，通过@code{root} 标签解码通常是最方便的，但您不必那样做。解码只是您可以在任何标签函数中执行的特殊操作。所以你可以制作一个只影响页面上某个标签的解码器。或者您可以为不同的标签制作多个解码器。使用带有@code{root} 的解码器的优点是它可以影响所有内容，并且由于它附加到根节点，它始终是最后一个被调用的标记函数。
+顺便说一句，通过@code{root} 标签解码通常是最方便的，但您不必那样做。解码只是您可以在任何标签函数中执行的特殊操作。所以你可以制作一个只影响页面上某个标签的解码器。或者您可以为不同的标签制作多个解码器。使用带有@code{root} 的解码器的优点是它可以影响所有内容，并且由于它附加到根节点，它始终是最后一个被调用的标签函数。
 
 
 @section{把它们放在一起}
@@ -810,7 +810,7 @@ The second paragraph—isn’t it great.
 
 @subsection[#:tag-prefix "tutorial-3"]{@filepath{pollen.rkt} 文件}
 
-该文件提供了自动导入同一目录下的 Pollen 源文件的功能。它是用标准的 Racket 编写的。 @filepath{pollen.rkt} 文件是可选的——没有它，你的标签将被视为默认标签函数。但是您可能会发现它是一种在您的项目中提供标记函数的便捷方式，包括附加到@code{root} 的@racket[decode] 函数。
+该文件提供了自动导入同一目录下的 Pollen 源文件的功能。它是用标准的 Racket 编写的。 @filepath{pollen.rkt} 文件是可选的——没有它，你的标签将被视为默认标签函数。但是您可能会发现它是一种在您的项目中提供标签函数的便捷方式，包括附加到@code{root} 的@racket[decode] 函数。
 
 在这里，我们将使用我们在上一节中设计的@filepath{pollen.rkt} 来为我们的源文件设置解码：
 
